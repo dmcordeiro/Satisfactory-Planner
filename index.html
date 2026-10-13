@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <!--
-Satisfactory Planner v3.5
-Commit: v3.5: MAM research tab, bigger cards, hand-drawn home art
-Description: Database tab removed and replaced by a MAM research tab (game-style trees,
-spoiler-free: trees open when you mark their sample found, next nodes show name and cost,
-the rest stay "?"). Overclocking moved into the MAM. Space Elevator phases stay "Phase ?"
-until the previous one is delivered. Bigger card text, merger text fixed. Search ranks the
-closest name first. New cards show full output before inputs are linked. Outputs not going
-anywhere turn yellow. Notes replaced by a Resource nodes panel (per world, by purity,
-miners count as used, warns when over). New hand-drawn blueprint homepage art.
-Sources: https://satisfactory.wiki.gg/wiki/MAM , https://satisfactory.wiki.gg/wiki/Power_Shard
+Satisfactory Planner v3.6
+Commit: v3.6: Item icons on links, bigger card text at original width
+Description: Item icons replace the link dots on every card edge (original icon set: shape
+= kind of item, color = material). Cards back to their original width with bigger text;
+long names end in "..." with the full name on hover. Yellow ring on outputs going nowhere,
+dashed ring on unlinked inputs.
 Release convention requested by Denial: include a short GitHub commit title and
 description with every future version.
 -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Satisfactory Planner v3.5</title>
+<title>Satisfactory Planner v3.6</title>
 <style>
 :root{color-scheme:dark;--bg:#11151b;--panel:#191e26;--line:#303844;--text:#e9edf1;--mute:#9aa7b8;--orange:#ffb45d;--green:#72d6b1;--red:#ff8585;--node:#222b35;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -208,9 +204,18 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
 .nrp{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.nrp>div{display:flex;flex-direction:column;align-items:center;gap:2px;background:#1d2225;border:1px solid #33383d;border-radius:5px;padding:4px}
 .nrp>div.over{border-color:var(--red)}.nrp>div.over small:last-child{color:var(--red)}.nrp small{font-size:10.5px;color:var(--mute)}.nrp span{display:flex;align-items:center;gap:6px}.nrp button{padding:0 7px;line-height:20px}.nrp b{min-width:16px;text-align:center}
 .ft .pur{margin-left:auto;padding:1px 8px;font-size:11.5px;border-radius:10px}.pur.p-i{color:#e09a6b;border-color:#6b4b37}.pur.p-n{color:#cfd6db}.pur.p-p{color:#7dd3a8;border-color:#3f6b5a}
+
+/* v3.5: item icon ports */
+.row{height:36px;padding:0 20px;font-size:14px}.hd .nm{font-size:18px}.hd.s .nm{font-size:16px}.hd .ty{font-size:10.5px}
+.row .L,.row .R{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:none;flex:0 1 auto;min-width:0}
+.port.ic{width:26px;height:26px;margin-top:-13px;border-radius:6px;background:#1a1d20;border:1.5px solid #7c8e9e;display:grid;place-items:center;z-index:2}
+.port.ic svg{pointer-events:none}.port.ic.pi{left:-13px}.port.ic.po{right:-13px;border-color:#69af9b}
+.port.ic:hover{background:#2a2016;border-color:var(--orange)}
+.port.ic.free{border-color:#f2c94c;box-shadow:0 0 0 3px #f2c94c40}.port.ic.unl{border:1.5px dashed #f2c94c}
+.port.ic::after{left:-6px;right:-6px;top:-6px;bottom:-6px;border-radius:8px}
 </style></head><body>
 <div id="app">
-<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.5</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
+<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.6</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
 <div id="tabs"><div class="tab on" data-id="t1"><span>Factory 1</span></div><button id="addTab" title="New tab">+</button></div>
 <div id="home" style="display:none"></div>
 <div class="layout">
@@ -401,9 +406,9 @@ const R=id=>GR[id]||S.recipes.find(r=>r.id===id),NODE=id=>T.nodes.find(n=>n.id==
 function toast(t){const e=$('#toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2400)}
 const armed=(b,fn,label)=>{if(b.dataset.arm){fn();return}b.dataset.arm=1;const old=b.innerHTML;b.textContent=label||'Sure?';setTimeout(()=>{delete b.dataset.arm;b.innerHTML=old},2000)};
 // ---- geometry: ports are placed from fixed sizes so wires always meet the dots
-const geo=n=>{if(n.kind==='store')return{w:56,hh:0,ni:1,no:0,rows:0};if(n.kind){const sp=n.kind==='split';return{w:210,hh:50,ni:sp?1:3,no:sp?3:1,rows:3}}const r=R(n.recipeId);return{w:290,hh:60,ni:r.inputs.length,no:r.outputs.length,rows:Math.max(r.inputs.length,r.outputs.length,1)}};
-const nh=n=>{const g=geo(n);return n.kind==='store'?44:g.hh+32*g.rows+(n.kind?0:62)};
-const anc=(n,side,i)=>{const g=geo(n);if(n.kind==='store')return[n.x,n.y+22];return[side==='in'?n.x:n.x+g.w,n.y+g.hh+32*i+16]};
+const geo=n=>{if(n.kind==='store')return{w:56,hh:0,ni:1,no:0,rows:0};if(n.kind){const sp=n.kind==='split';return{w:170,hh:50,ni:sp?1:3,no:sp?3:1,rows:3}}const r=R(n.recipeId);return{w:250,hh:60,ni:r.inputs.length,no:r.outputs.length,rows:Math.max(r.inputs.length,r.outputs.length,1)}};
+const nh=n=>{const g=geo(n);return n.kind==='store'?44:g.hh+36*g.rows+(n.kind?0:62)};
+const anc=(n,side,i)=>{const g=geo(n);if(n.kind==='store')return[n.x,n.y+22];return[side==='in'?n.x:n.x+g.w,n.y+g.hh+36*i+18]};
 // ---- types
 const portCount=(n,side)=>{const g=geo(n);return side==='in'?g.ni:g.no};
 function ltype(id,seen=new Set()){if(seen.has(id))return null;seen.add(id);
@@ -437,14 +442,14 @@ function status(n,o){if(o.eff<.999)return['bad',`Input shortage · ${Math.round(
  if(sur.length)return['warn',`Surplus ${sur.join(', ')} → add storage`];
  if(free.length)return['warn',`${free.join(', ')} not going to storage`];if(ul.length)return['warn',`Not linked yet: ${ul.join(', ')}`];return['ok','Inputs satisfied · output used']}
 // ---- render
-const rowH=(i,l,r,fr)=>`<div class="row">${l?`<span class="L">${l}</span><span class="port pi" data-side="in" data-i="${i}"></span>`:'<span></span>'}${r?`<span class="R${fr?' free':''}" ${fr?'title="Not going anywhere. Link it to storage or another block."':''}>${r}</span><span class="port po${fr?' free':''}" data-side="out" data-i="${i}"></span>`:'<span></span>'}</div>`;
+const rowH=(i,a,b)=>`<div class="row">${a?`<span class="L" title="${esc(a.ti)}">${a.h}</span><span class="port pi ic${a.u?' unl':''}" data-side="in" data-i="${i}" title="${a.u?'Not linked yet: the card assumes this input is supplied':esc(a.t||'')}">${itemIcon(a.t)}</span>`:'<span></span>'}${b?`<span class="R${b.f?' free':''}" title="${esc(b.ti)}${b.f?' · not going anywhere':''}">${b.h}</span><span class="port po ic${b.f?' free':''}" data-side="out" data-i="${i}" title="${esc(b.t||'')}">${itemIcon(b.t)}</span>`:'<span></span>'}</div>`;
 function machineHTML(n,o){const r=o.r,b=B(r.building),[c,t]=status(n,o),g=geo(n);let rows='';
- for(let i=0;i<g.rows;i++){const p=r.inputs[i],q=r.outputs[i];rows+=rowH(i,p?`<b>${fmt(o.need[i])}</b> ${esc(p.type)}${o.unl&&o.unl[i]?` <i class="unl" title="Not linked yet. The card assumes this input is supplied."></i>`:o.sup[i]+.01<o.need[i]?` <span class="bad">▼ ${fmt(o.sup[i])}</span>`:''}`:'',q?`${fmt(o.out[i])} ${esc(q.type)}`:'',q&&o.out[i]>.01&&!C.E.some(e=>e.from===n.id&&e.fi===i))}
+ for(let i=0;i<g.rows;i++){const p=r.inputs[i],q=r.outputs[i];const un=o.unl&&o.unl[i];rows+=rowH(i,p&&{h:`<b>${fmt(o.need[i])}</b> ${esc(p.type)}${!un&&o.sup[i]+.01<o.need[i]?` <span class="bad">▼ ${fmt(o.sup[i])}</span>`:''}`,t:p.type,ti:`${fmt(o.need[i])}/min ${p.type}`,u:un},q&&{h:`${fmt(o.out[i])} ${esc(q.type)}`,t:q.type,ti:`${fmt(o.out[i])}/min ${q.type}`,f:o.out[i]>.01&&!C.E.some(e=>e.from===n.id&&e.fi===i)})}
  return `<div class="hd"><span class="em">${ico(b.icon,28)}</span><div title="${esc(r.name)}"><div class="ty">${esc(r.building)}</div><div class="nm">${esc(r.name)}</div></div><button class="x" data-act="del" title="Remove">×</button></div>${rows}
  <div class="ft"><button data-act="dec">−</button><b>${n.count}</b><button data-act="inc">+</button>${OCU()||n.clock!==100?`<span>clock</span><input type="number" min="1" max="250" value="${n.clock}" data-act="clock">%`:""}${usesNode(r)?`<button class="pur p-${n.pur||'n'}" data-act="pur" title="Which node this sits on (click to change)">${PURL[n.pur||'n']}</button>`:''}</div><div class="st ${c}" title="${esc(t)}">${t}</div>`}
 function logiHTML(n){const sp=n.kind==='split',t=ltype(n.id),E=C.E,id=n.id,o=C.N[id];
  const fi=i=>E.filter(e=>e.to===id&&e.ti===i).reduce((s,e)=>s+e.flow,0),fo=i=>E.filter(e=>e.from===id&&e.fi===i).reduce((s,e)=>s+e.flow,0),used=E.some(e=>e.from===id);let h='';
- for(let i=0;i<3;i++){const li=sp?i<1:true,ro=sp?true:i<1;h+=rowH(i,li?`${fmt(fi(i))}/min`:'',ro?`${fmt(sp?fo(i):(used?fo(0):(o?o.A:0)))}/min`:'',!sp&&!used&&o&&o.A>.01)}
+ for(let i=0;i<3;i++){const li=sp?i<1:true,ro=sp?true:i<1;const vi=fi(i),vo=sp?fo(i):(used?fo(0):(o?o.A:0));h+=rowH(i,li&&{h:`${fmt(vi)}/min`,t,ti:`${fmt(vi)}/min ${t||'any item'}`},ro&&{h:`${fmt(vo)}/min`,t,ti:`${fmt(vo)}/min ${t||'any item'}`,f:!sp&&!used&&o&&o.A>.01})}
  return `<div class="hd s"><span class="em">${ico(sp?'split':'merge',22)}</span><div title="${esc(t||'any item')}"><div class="nm">${sp?'Splitter':'Merger'}</div><div class="ty">${esc(t||'any item')}</div></div><button class="x" data-act="del">×</button></div>${h}`}
 function render(){calc();world.querySelectorAll('.node').forEach(e=>e.remove());
  T.nodes.forEach(n=>{const o=C.N[n.id];if(!o)return;const el=document.createElement('div'),g=geo(n);el.className='node'+(n.kind==='store'?' store':'')+(sel.has(n.id)?' sel':'');el.style.cssText=`left:${n.x}px;top:${n.y}px;width:${g.w}px`;el.dataset.id=n.id;
@@ -692,7 +697,7 @@ function popup(x,y,html){closeCtx();ctxEl=document.createElement('div');ctxEl.cl
 addEventListener('pointerdown',e=>{if(ctxEl&&!ctxEl.contains(e.target))closeCtx()},true);
 function folderMenu(btn,cur,cb){const r=btn.getBoundingClientRect(),el=popup(r.left,r.bottom+4,[{v:'',t:'No folder'},...S.folders.map(f=>({v:f.id,t:f.name})),{v:'+',t:'+ New folder'}].map(o=>`<div class="ci${o.v===(cur||'')?' on':''}" data-v="${o.v}">${esc(o.t)}</div>`).join(''));
  el.onclick=e=>{const c=e.target.closest('.ci');if(!c)return;closeCtx();let v=c.dataset.v;if(v==='+'){v=uid();S.folders.push({id:v,name:'New folder'});fedit=v}cb(v)}}
-function placeAt(wx,wy,rid){T.nodes.push({id:uid(),x:posRound(wx-145),y:posRound(wy-40),recipeId:rid,count:1,clock:100});render();save()}
+function placeAt(wx,wy,rid){T.nodes.push({id:uid(),x:posRound(wx-125),y:posRound(wy-40),recipeId:rid,count:1,clock:100});render();save()}
 function searchPoint(){const r=canvas.getBoundingClientRect();return mouse&&mouse.x>=r.left&&mouse.x<=r.left+canvas.clientWidth&&mouse.y>=r.top&&mouse.y<=r.top+canvas.clientHeight?mouse:{x:r.left+canvas.clientWidth/2,y:r.top+canvas.clientHeight/2}}
 function placeLogistics(wx,wy,kind){T.nodes.push({id:uid(),x:posRound(wx-85),y:posRound(wy-40),kind});render();save()}
 function searchChoices(){return [{id:'logistics:merge',name:'Merger',building:'Logistics · 6',kind:'merge',inputs:[],outputs:[]},{id:'logistics:split',name:'Splitter',building:'Logistics · 7',kind:'split',inputs:[],outputs:[]},...avail(),...S.recipes]}
@@ -728,7 +733,7 @@ function renderHome(){const st=S.tabs.map(tabStats),tot={pw:0,pg:0,mc:0,by:{},ra
  const art=heroArt();
  const cards=S.tabs.map((t,i)=>{const s=st[i];return`<div class="fc" data-t="${t.id}">${preview(t)}<div class="fb">${hedit===t.id?`<input id="hn" value="${esc(t.name)}">`:`<b>${esc(t.name)}</b>`}<small>${s.blocks} blocks · ${s.mc} machines</small>${s.raw.length?`<small>Needs ${s.raw.slice(0,3).map(([n,v])=>esc(n)+' '+fmt(v)+'/min').join(' · ')}${s.raw.length>3?' · +'+(s.raw.length-3)+' more':''}</small>`:''}</div><div class="fa"><button class="primary" data-open="${t.id}">Open</button><button data-hdup="${t.id}" title="Duplicate factory">⧉</button>${IX.worlds.length>1?`<button data-hcp="${t.id}" title="Copy to another world">➜</button>`:''}<button data-hren="${t.id}" title="Rename">${ico('edit',14)}</button><button data-hdel="${t.id}" ${S.tabs.length>1?'':'disabled'} title="Delete factory">${ico('trash',14)}</button></div></div>`}).join('');
  const by=Object.entries(tot.by).sort((a,b)=>b[1]-a[1]).map(([b,n])=>`<tr><td>${esc(b)}</td><td>${n}</td></tr>`).join(''),raw=Object.entries(tot.raw).sort().map(([n,v])=>`<tr><td>${esc(n)}</td><td>${fmt(v)}/min</td></tr>`).join('');
- $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.5</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
+ $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.6</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
  <div class="qs"><button class="primary" id="h-new">+ New factory</button><button id="h-cont">Continue · ${esc(T.name)}</button><button id="h-imp">Import / Export</button><button id="h-mam">MAM research</button>${USER?'':'<button class="primary" id="h-signin">Sign in with Google</button>'}</div><p class="tiny">${USER?'Signed in as '+esc(USER.email||USER.displayName||'your Google account')+' · your work saves online automatically':'Not signed in: your work saves only in this browser. Sign in to keep it online and use it on any device.'}</p>
  <section class="about"><h2>About the planner</h2><p>Satisfactory Planner is a node-graph editor for production lines. Place recipes, link them together, and the flow of every item, the power draw and any shortages update live.</p><ul><li><b>Spoiler-free recipes</b> that unlock as you mark milestones complete in the ★ Progress window.</li><li><b>MAM research</b> trees that unlock recipes as you research them, without spoilers.</li><li><b>Custom recipes</b> with your own buildings from the + recipe button.</li><li><b>Belt tier badges</b> on every link, with pipes for fluids.</li><li><b>Space Elevator</b> phase materials and tier unlocks.</li><li><b>Right-click a block</b> for its stats and to upgrade it.</li><li><b>Worlds and cloud save</b> with Google sign-in.</li></ul></section>
  ${worldsHTML()}<div class="hg"><section><h2>Your factories</h2><div class="fcs">${cards}</div></section><section><h2>Totals · all factories</h2><div class="stat"><span>Power used</span><span class="value">${fmt(tot.pw)} MW</span></div><div class="stat"><span>Generated</span><span class="value">${fmt(tot.pg)} MW</span></div>${tot.pw>tot.pg+.05?`<div class="iss bad"><b>Power shortage</b><br>Short by ${fmt(tot.pw-tot.pg)} MW</div>`:''}<div class="stat"><span>Machines</span><b>${tot.mc}</b></div><h2>Buildings</h2>${by?`<table class="tbl">${by}</table>`:'<p class="tiny">No machines yet.</p>'}<h2>Raw inputs needed</h2>${raw?`<table class="tbl">${raw}</table>`:'<p class="tiny">None.</p>'}</section></div><p class="tiny" style="margin-top:22px">A feedback option will come once the app is shared with other people.</p></div>`;
@@ -831,6 +836,36 @@ $('#home').onclick=e=>{const t=e.target,g=s=>t.closest(s);
 $('#homeBtn').onclick=showHome;
 showHome();
 
+// ---- v3.5 item icons (original, drawn in code): shape = kind of item, color = material
+function itemColor(t){const s=t.toLowerCase(),M=[[/caterium|quickwire|gold/,'#e2bd48'],[/copper|wire\b|cable/,'#d9844a'],[/alclad|alumin|heat sink/,'#cfd6dc'],[/bauxite/,'#c4674a'],[/steel|beam|encased/,'#7f8c98'],[/silica/,'#e6e0d2'],[/quartz|crystal oscillator/,'#d4a8e6'],[/limestone|concrete/,'#d2c9b1'],[/compacted|coal|petroleum coke|black powder|smokeless/,'#5b5f63'],[/sulfur/,'#e3d046'],[/uranium|plutonium|non-fissile|nuclear/,'#72d16a'],[/sam|ficsite|dark matter|photonic|singularity|time crystal|ficsonium|quantum|superposition|alien power/,'#b071e0'],[/water/,'#4aa7e3'],[/crude oil|heavy oil|packaged oil/,'#6b5643'],[/rocket fuel/,'#e85a9a'],[/turbofuel/,'#e8604a'],[/ionized/,'#5fd6e6'],[/biofuel/,'#8bcf5a'],[/fuel/,'#eda548'],[/nitrogen/,'#9fd3e6'],[/acid/,'#b8e04a'],[/plastic|polymer/,'#5bb1e3'],[/rubber/,'#3e4246'],[/biomass|leaves|wood|mycelia/,'#6fbf5a'],[/fabric/,'#c4a3d6'],[/alien|protein|remains|dna/,'#d86d8f'],[/power shard|slug/,'#4ee0d0'],[/diamond/,'#bff0ff'],[/iron|screw|rotor|modular|smart plating|reinforced/,'#9fb0c0']];
+ for(const[r,c]of M)if(r.test(s))return c;return'#c3cdd6'}
+function itemKind(t){const s=t.toLowerCase(),K=[[/^packaged|empty canister|empty fluid tank|battery/,'can'],[/gas$|nitrogen/,'gas'],[/fuel rod|cell|pellet|ficsonium|pasta|non-fissile|plutonium waste|uranium waste/,'cell'],[/solid biofuel|biomass|leaves|wood|mycelia|fabric|protein|remains|dna/,'leaf'],[/water|oil|fuel|residue|solution|acid|photonic|liquid/,'drop'],[/ ore$|^limestone$|^coal$|^raw quartz$|^sulfur$|^bauxite$|^uranium$|^sam$/,'ore'],[/ingot/,'ingot'],[/power shard|crystal|diamond|time crystal/,'gem'],[/silica|concrete|powder|coke|compacted|\bdust\b/,'pile'],[/biomass|leaves|wood|mycelia|fabric|protein|remains|dna|biofuel/,'leaf'],[/fuel rod|cell|pellet|ficsonium|pasta|non-fissile|plutonium waste|uranium waste/,'cell'],[/nobelisk|ammo|rebar(?!.*gun)/,'ammo'],[/screw/,'screw'],[/quickwire|^wire$/,'wire'],[/cable/,'cable'],[/frame|framework/,'frame'],[/rotor|stator|motor|engine/,'gear'],[/circuit|computer|limiter|connector|oscillator|control|processor|server|director|wiring|filter/,'chip'],[/rod|pipe|beam/,'rod'],[/plate|sheet|plating|trigon|casing|heat sink/,'plate']];
+ for(const[r,k]of K)if(r.test(s))return k;return'crate'}
+function itemIcon(t,z=18){if(!t)return`<svg width="${z}" height="${z}" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3" fill="#7c8e9e"/></svg>`;const ICOC=itemIcon.c||(itemIcon.c={}),key=t+'|'+z;if(ICOC[key])return ICOC[key];
+ const c=itemColor(t),L='#ffffff59',D='#00000052',k=itemKind(t);let g;
+ switch(k){
+  case'ore':g=`<path d="M3 12 6 5l6-2 5 5-1 7-7 2z" fill="${c}"/><path d="M6 5l6-2 5 5-6 2z" fill="${L}"/><path d="M11 10l6-2-1 7-7 2z" fill="${D}"/>`;break;
+  case'ingot':g=`<path d="M2 12l4-4h12l-4 4z" fill="${c}"/><path d="M2 12l4-4h12l-4 4z" fill="${L}"/><path d="M2 12h12v4H2z" fill="${c}"/><path d="M14 12l4-4v4l-4 4z" fill="${c}"/><path d="M14 12l4-4v4l-4 4z" fill="${D}"/>`;break;
+  case'plate':g=`<path d="M2 9l5-4h11l-5 4z" fill="${c}"/><path d="M2 9l5-4h11l-5 4z" fill="${L}"/><path d="M2 9h11v2H2z" fill="${c}"/><path d="M13 9l5-4v2l-5 4z" fill="${D}"/><path d="M2 14l5-4h11l-5 4z" fill="${c}"/><path d="M2 14h11v2H2z" fill="${c}"/><path d="M2 14h11v2H2z" fill="${D}"/><path d="M13 14l5-4v2l-5 4z" fill="${D}"/>`;break;
+  case'rod':g=`<g transform="rotate(-35 10 10)"><rect x="1" y="5.5" width="18" height="3.4" rx="1.7" fill="${c}"/><rect x="1" y="5.5" width="18" height="1.4" rx=".7" fill="${L}"/><rect x="1" y="11" width="18" height="3.4" rx="1.7" fill="${c}"/><rect x="1" y="13" width="18" height="1.4" rx=".7" fill="${D}"/></g>`;break;
+  case'screw':g=`<path d="M6 3h8l2 3H4z" fill="${c}"/><path d="M6 3h8l2 3H4z" fill="${L}"/><rect x="8.2" y="6" width="3.6" height="11" fill="${c}"/><path d="M8 8.5l4-1M8 11.5l4-1M8 14.5l4-1" stroke="${D}" stroke-width="1.2"/><path d="M8.2 17h3.6L10 19z" fill="${c}"/>`;break;
+  case'wire':g=`<path d="M4 10c0-3 3-5 6-5s6 2 6 5-3 5-6 5" fill="none" stroke="${c}" stroke-width="1.6"/><path d="M6.5 10c0-2 1.6-3 3.5-3s3.5 1 3.5 3-1.6 3-3.5 3" fill="none" stroke="${c}" stroke-width="1.6"/><path d="M10 15c-2 0-3 1-5 3" fill="none" stroke="${c}" stroke-width="1.6"/><circle cx="10" cy="10" r="1.2" fill="${L}"/>`;break;
+  case'cable':g=`<ellipse cx="10" cy="5.5" rx="7" ry="2.5" fill="${c}"/><rect x="3" y="5.5" width="14" height="9" fill="${c}"/><rect x="3" y="5.5" width="14" height="9" fill="${D}"/><path d="M3 8.5h14M3 11.5h14" stroke="${c}" stroke-width="1"/><ellipse cx="10" cy="14.5" rx="7" ry="2.5" fill="${c}"/><ellipse cx="10" cy="5.5" rx="2.5" ry="1" fill="${D}"/>`;break;
+  case'frame':g=`<rect x="3" y="3" width="14" height="14" rx="1" fill="none" stroke="${c}" stroke-width="2.6"/><path d="M4 4l12 12M16 4L4 16" stroke="${c}" stroke-width="1.6"/><rect x="3" y="3" width="14" height="2" fill="${L}"/>`;break;
+  case'gear':{let d='';for(let a=0;a<8;a++){const r1=a*Math.PI/4,x=10+8.2*Math.cos(r1),y=10+8.2*Math.sin(r1);d+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.8" fill="${c}"/>`}
+   g=d+`<circle cx="10" cy="10" r="6.6" fill="${c}"/><circle cx="10" cy="10" r="2.4" fill="#1a1d20"/><path d="M6 6.5a5 5 0 0 1 4-2" stroke="${L}" stroke-width="1.4" fill="none"/>`;break}
+  case'chip':g=`<path d="M6 2v3M10 2v3M14 2v3M6 15v3M10 15v3M14 15v3M2 6h3M2 10h3M2 14h3M15 6h3M15 10h3M15 14h3" stroke="${c}" stroke-width="1.4"/><rect x="5" y="5" width="10" height="10" rx="1.5" fill="#262b30" stroke="${c}" stroke-width="1.5"/><rect x="7.5" y="7.5" width="5" height="5" rx="1" fill="${c}"/>`;break;
+  case'drop':g=`<path d="M10 2c0 0-6 7-6 10.5a6 6 0 0 0 12 0C16 9 10 2 10 2z" fill="${c}"/><path d="M10 2c0 0 6 7 6 10.5a6 6 0 0 1-6 6z" fill="${D}"/><path d="M7 12.5a3 3 0 0 0 2 3" stroke="${L}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;break;
+  case'gas':g=`<circle cx="7" cy="12" r="4.5" fill="${c}" opacity=".8"/><circle cx="13" cy="9" r="5" fill="${c}"/><circle cx="12" cy="15" r="3" fill="${c}" opacity=".65"/><circle cx="11.5" cy="7.5" r="1.6" fill="${L}"/>`;break;
+  case'can':g=`<rect x="7.5" y="1.5" width="5" height="3" rx="1" fill="#8d979f"/><rect x="4.5" y="4" width="11" height="14.5" rx="2.5" fill="#6c757d"/><rect x="4.5" y="8" width="11" height="6" fill="${c}"/><rect x="4.5" y="4" width="3" height="14.5" rx="1.5" fill="${L}"/>`;break;
+  case'pile':g=`<path d="M2 16c2-7 5-10 8-10s6 3 8 10z" fill="${c}"/><path d="M10 6c3 0 6 3 8 10h-6z" fill="${D}"/><circle cx="8" cy="10" r="1" fill="${L}"/><circle cx="6" cy="13.5" r=".9" fill="${L}"/><circle cx="11" cy="12" r=".8" fill="${L}"/>`;break;
+  case'gem':g=`<path d="M10 2l6 5-6 11L4 7z" fill="${c}"/><path d="M4 7h12l-6 11z" fill="${D}"/><path d="M10 2l3 5h-6z" fill="${L}"/>`;break;
+  case'leaf':g=`<path d="M3 17C3 8 9 3 17 3c0 9-5 14-14 14z" fill="${c}"/><path d="M3 17C8 12 11 8 15 5" stroke="${D}" stroke-width="1.4" fill="none"/><path d="M17 3c0 9-5 14-14 14l12-12z" fill="${D}" opacity=".5"/>`;break;
+  case'cell':g=`<rect x="6" y="2" width="8" height="16" rx="4" fill="#5d666e"/><rect x="7.5" y="5" width="5" height="10" rx="2.5" fill="${c}"/><rect x="7.5" y="5" width="2" height="10" rx="1" fill="${L}"/>`;break;
+  case'ammo':g=`<path d="M7 18V9c0-4 3-7 3-7s3 3 3 7v9z" fill="${c}"/><rect x="7" y="13" width="6" height="5" fill="${D}"/><path d="M8.3 9c0-3 1.7-5 1.7-5" stroke="${L}" stroke-width="1.2" fill="none"/>`;break;
+  default:g=`<path d="M10 2l8 4v8l-8 4-8-4V6z" fill="${c}"/><path d="M2 6l8 4 8-4-8-4z" fill="${L}"/><path d="M10 10v8l8-4V6z" fill="${D}"/>`}
+ return ICOC[key]=`<svg width="${z}" height="${z}" viewBox="0 0 20 20" aria-hidden="true">${g}</svg>`}
+
 // ---- v3.5 resource nodes (per world)
 function nodeUse(){const U={};S.tabs.forEach(t=>t.nodes.forEach(n=>{const r=!n.kind&&R(n.recipeId);if(!usesNode(r))return;const k=r.outputs[0].type,u=U[k]=U[k]||{i:0,n:0,p:0};u[n.pur||'n']+=n.count}));return U}
 function nodeIssues(){const U=nodeUse(),out=[];S.nodes=S.nodes||{};for(const k in U)for(const p of['i','n','p']){const have=(S.nodes[k]||{})[p]||0,u=U[k][p];if(u>have)out.push(`<div class="iss bad"><b>${esc(k)} nodes</b><br>${u} on ${PURL[p].toLowerCase()} nodes, only ${have} available</div>`)}return out}
@@ -926,7 +961,7 @@ function heroArt(){let sd=11;const rnd=()=>(sd=(sd*9301+49297)%233280)/233280,j=
   <path d="${box(944,146,44,66,2)}"/><path d="${[158,170,182,194].map(y=>ln(948,y,984,y,1)).join(' ')}" fill="none" opacity=".6"/>
  </g>${smoke}`;
  const tb=`<g filter="url(#wob)"><path d="${box(770,12,216,60,1.4)} ${ln(770,32,986,32,1)} ${ln(770,52,986,52,1)} ${ln(846,32,846,72,1)}" fill="none" stroke="${I}" stroke-width="1.3" opacity=".85"/>
-  <text x="878" y="26" text-anchor="middle" font-size="10" letter-spacing="1.6" fill="${I}" opacity=".85" font-family="ui-monospace,Consolas,monospace">FACTORY LAYOUT · SHEET 3.5</text>
+  <text x="878" y="26" text-anchor="middle" font-size="10" letter-spacing="1.6" fill="${I}" opacity=".85" font-family="ui-monospace,Consolas,monospace">FACTORY LAYOUT · SHEET 3.6</text>
   <text x="776" y="46" font-size="8.5" letter-spacing="1" fill="${P}" font-family="ui-monospace,Consolas,monospace">DRAWN BY</text><text x="852" y="47" font-size="14" fill="${O}" style="${H}">Denial &amp; Claude</text>
   <text x="776" y="66" font-size="8.5" letter-spacing="1" fill="${P}" font-family="ui-monospace,Consolas,monospace">SCALE</text><text x="852" y="67" font-size="12" fill="${I}" style="${H}">1 : 60 per min</text></g>`;
  const pencil=`<g transform="translate(36,206) rotate(-8)" filter="url(#wob)"><rect width="104" height="9" rx="1.5" fill="#c88a3c" stroke="#2a2016" stroke-width="1"/><rect x="-10" width="12" height="9" fill="#a7a39c" stroke="#2a2016" stroke-width="1"/><path d="M104,0 L122,4.5 L104,9 Z" fill="#e2c9a0" stroke="#2a2016" stroke-width="1"/><path d="M117,3.2 L122,4.5 L117,5.8 Z" fill="#333"/></g>`;
