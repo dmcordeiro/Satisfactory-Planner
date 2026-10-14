@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <!--
-Satisfactory Planner v3.6
-Commit: v3.6: Item icons on links, bigger card text at original width
-Description: Item icons replace the link dots on every card edge (original icon set: shape
-= kind of item, color = material). Cards back to their original width with bigger text;
-long names end in "..." with the full name on hover. Yellow ring on outputs going nowhere,
-dashed ring on unlinked inputs.
+Satisfactory Planner v3.7
+Commit: v3.7: Notes are back, unknown-purity nodes
+Description: Notes popup returns next to Nodes (one note per world). Nodes panel gets an
+"Unknown" column for nodes found with the scanner but not visited yet; they show in the
+totals but don't count for miners until their purity is set.
 Release convention requested by Denial: include a short GitHub commit title and
 description with every future version.
 -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Satisfactory Planner v3.6</title>
+<title>Satisfactory Planner v3.7</title>
 <style>
 :root{color-scheme:dark;--bg:#11151b;--panel:#191e26;--line:#303844;--text:#e9edf1;--mute:#9aa7b8;--orange:#ffb45d;--green:#72d6b1;--red:#ff8585;--node:#222b35;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -205,6 +204,14 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
 .nrp>div.over{border-color:var(--red)}.nrp>div.over small:last-child{color:var(--red)}.nrp small{font-size:10.5px;color:var(--mute)}.nrp span{display:flex;align-items:center;gap:6px}.nrp button{padding:0 7px;line-height:20px}.nrp b{min-width:16px;text-align:center}
 .ft .pur{margin-left:auto;padding:1px 8px;font-size:11.5px;border-radius:10px}.pur.p-i{color:#e09a6b;border-color:#6b4b37}.pur.p-n{color:#cfd6db}.pur.p-p{color:#7dd3a8;border-color:#3f6b5a}
 
+/* v3.7: notes popup + unknown purity */
+#notesP{position:absolute;left:16px;bottom:64px;width:min(380px,92%);background:#25282b;border:1px solid var(--line);border-radius:10px;padding:0 12px 12px;display:none;box-shadow:0 8px 24px #0006;cursor:auto}
+#notesP textarea{width:100%;height:260px;resize:vertical;background:#11171e;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:8px;font:13px/1.45 system-ui,sans-serif}
+#notesP textarea:focus{outline:none;border-color:var(--orange)}
+#notesBtn{display:inline-flex;align-items:center;gap:6px}
+#nodesP{width:min(410px,94%)}.nrp{grid-template-columns:repeat(4,1fr)}
+.nrp>div.unk{border-style:dashed;border-color:#4a5157;background:#1a1e21}.nrh em{font-style:normal;color:#9aa7b1;font-size:12px}
+
 /* v3.5: item icon ports */
 .row{height:36px;padding:0 20px;font-size:14px}.hd .nm{font-size:18px}.hd.s .nm{font-size:16px}.hd .ty{font-size:10.5px}
 .row .L,.row .R{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:none;flex:0 1 auto;min-width:0}
@@ -215,7 +222,7 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
 .port.ic::after{left:-6px;right:-6px;top:-6px;bottom:-6px;border-radius:8px}
 </style></head><body>
 <div id="app">
-<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.6</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
+<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.7</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
 <div id="tabs"><div class="tab on" data-id="t1"><span>Factory 1</span></div><button id="addTab" title="New tab">+</button></div>
 <div id="home" style="display:none"></div>
 <div class="layout">
@@ -259,7 +266,8 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
  <div class="ft"><button data-act="dec">−</button><b>1</b><button data-act="inc">+</button><span>clock</span><input type="number" min="1" max="250" value="100" data-act="clock">%</div><div class="st ok">20/min Iron Plate available</div></div><div class="node" data-id="z0818lp" style="left: 724px; top: 1250px; width: 250px;"><div class="hd"><span class="em"><svg class="ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5l6 6-3 3-6-6z"></path><path d="M11 9L4 16l4 4 7-7"></path></svg></span><div><div class="ty">Constructor</div><div class="nm">Iron Rod</div></div><button class="x" data-act="del" title="Remove">×</button></div><div class="row"><span class="L"><b>15</b> Iron Ingot</span><span class="port pi" data-side="in" data-i="0"></span><span class="R">15 Iron Rod</span><span class="port po" data-side="out" data-i="0"></span></div>
  <div class="ft"><button data-act="dec">−</button><b>1</b><button data-act="inc">+</button><span>clock</span><input type="number" min="1" max="250" value="100" data-act="clock">%</div><div class="st warn">Surplus 5/min Iron Rod → add storage</div></div><div class="node" data-id="c91494s" style="left: 715px; top: 1444px; width: 250px;"><div class="hd"><span class="em"><svg class="ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5l6 6-3 3-6-6z"></path><path d="M11 9L4 16l4 4 7-7"></path></svg></span><div><div class="ty">Constructor</div><div class="nm">Iron Rod</div></div><button class="x" data-act="del" title="Remove">×</button></div><div class="row"><span class="L"><b>15</b> Iron Ingot</span><span class="port pi" data-side="in" data-i="0"></span><span class="R">15 Iron Rod</span><span class="port po" data-side="out" data-i="0"></span></div>
  <div class="ft"><button data-act="dec">−</button><b>1</b><button data-act="inc">+</button><span>clock</span><input type="number" min="1" max="250" value="100" data-act="clock">%</div><div class="st warn">Surplus 5/min Iron Rod → add storage</div></div><div class="node" data-id="73351pk" style="left: 1058px; top: 1323px; width: 170px;"><div class="hd s"><span class="em"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12h-6"></path><path d="M15 12c-4 0-4-6-8-6H3M15 12c-4 0-4 6-8 6H3"></path></svg></span><div><div class="nm">Merger</div><div class="ty">Iron Rod</div></div><button class="x" data-act="del">×</button></div><div class="row"><span class="L">10/min</span><span class="port pi" data-side="in" data-i="0"></span><span class="R">20/min</span><span class="port po" data-side="out" data-i="0"></span></div><div class="row"><span class="L">10/min</span><span class="port pi" data-side="in" data-i="1"></span><span></span></div><div class="row"><span class="L">0/min</span><span class="port pi" data-side="in" data-i="2"></span><span></span></div></div></div>
-  <div id="toolbar"><button id="zo">−</button><span id="zl">38%</span><button id="zi">+</button><button id="fit">Fit</button><button id="selBtn" title="Box-select mode (or hold Shift and drag)">⬚ Select</button><button id="hlBtn" class="primary" title="Highlight the chain of the selected block">Trace</button><button id="snapBtn" aria-pressed="false" title="Snap moved and new blocks to the 24-unit grid">Snap: off</button><button id="orgBtn" title="Organize blocks">Organize</button><button id="cpy" title="Ctrl+C">Copy</button><button id="pst" title="Ctrl+V">Paste</button><button id="nodesBtn" title="Resource nodes in this world"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19l5-9 4 5 3-4 6 8z"></path><circle cx="16" cy="6" r="2"></circle></svg> Nodes</button></div><div id="marq" style="display: none; left: 599px; top: 67px; width: 140px; height: 558px;"></div>
+  <div id="toolbar"><button id="zo">−</button><span id="zl">38%</span><button id="zi">+</button><button id="fit">Fit</button><button id="selBtn" title="Box-select mode (or hold Shift and drag)">⬚ Select</button><button id="hlBtn" class="primary" title="Highlight the chain of the selected block">Trace</button><button id="snapBtn" aria-pressed="false" title="Snap moved and new blocks to the 24-unit grid">Snap: off</button><button id="orgBtn" title="Organize blocks">Organize</button><button id="cpy" title="Ctrl+C">Copy</button><button id="pst" title="Ctrl+V">Paste</button><button id="nodesBtn" title="Resource nodes in this world"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19l5-9 4 5 3-4 6 8z"></path><circle cx="16" cy="6" r="2"></circle></svg> Nodes</button><button id="notesBtn" title="Notes for this world"><i data-ic="note"></i> Notes</button></div><div id="marq" style="display: none; left: 599px; top: 67px; width: 140px; height: 558px;"></div>
+  <div id="notesP"><div class="npH"><b>Notes</b><small>whole world</small><button id="notesX">✕</button></div><textarea id="notesT" placeholder="Anything worth remembering in this world: where things are, what to build next..."></textarea></div>
   <div id="nodesP"><div class="npH"><b>Resource nodes</b><small>whole world</small><button id="nodesX">✕</button></div><div id="npB"></div></div>
   <div id="hint">S search · 6 merger · 7 splitter · Scroll to zoom · drag to pan · Middle-drag or Shift+drag to box-select · right-click empty space to search · right-click a block for stats · Ctrl+C / V copy &amp; paste · Ctrl+Z undo · double-click a line to remove it</div><div id="toast" style="display: none;">Copied 7 blocks</div></main>
  <aside class="right" id="right"><h2>Totals · Factory 1</h2><div class="stat"><span style="display:flex;gap:6px;align-items:center"><svg class="ico" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L5 13h6l-1 9 8-11h-6z"></path></svg> Power</span><span class="value">193 MW</span></div><div class="stat"><span>Machines</span><b>36</b></div>
@@ -349,7 +357,7 @@ function rscore(r,q){if(!q)return 1;const n=String(r.name).toLowerCase(),w=q.spl
  if(n===q)return 100;if(n.startsWith(q))return 90;if(has(n))return 80-n.length/100;
  const outs=r.outputs.map(p=>p.type.toLowerCase()).join(' ');if(has(outs))return 60;if(has(String(r.building).toLowerCase()))return 40;
  return has([n,r.building,outs,...r.inputs.map(p=>p.type)].join(' ').toLowerCase())?20:0}
-const PURL={i:'Impure',n:'Normal',p:'Pure'},PURM={i:.5,n:1,p:2};
+const PURL={i:'Impure',n:'Normal',p:'Pure',u:'Unknown'},PURM={i:.5,n:1,p:2};
 const usesNode=r=>!!r&&!r.inputs.length&&r.outputs.length===1&&/^(Miner|Oil Extractor)/.test(r.building);
 const purM=(n,r)=>usesNode(r)?PURM[n.pur||'n']:1;
 const NRES=[['Iron Ore',1],['Copper Ore',1],['Limestone',1],['Coal'],['Caterium Ore','c0'],['Raw Quartz','q0'],['Sulfur','s0'],['Crude Oil'],['Bauxite'],['Uranium'],['SAM','t0']];
@@ -494,7 +502,7 @@ function summary(){let pw=0,pg=0,mc=0,iss='';const made={},need={},sup={},free={
 // ---- view
 function applyView(){const v=T.view;world.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.s})`;canvas.style.backgroundPosition=`${v.x}px ${v.y}px`;canvas.style.backgroundSize=`${24*v.s}px ${24*v.s}px`;$('#zl').textContent=Math.round(v.s*100)+'%'}
 function zoom(k,mx,my){const v=T.view,s=Math.min(2,Math.max(.25,v.s*k));v.x=mx-(mx-v.x)*s/v.s;v.y=my-(my-v.y)*s/v.s;v.s=s;applyView();save()}
-canvas.addEventListener('wheel',e=>{if(e.target.closest('#nodesP'))return;e.preventDefault();const r=canvas.getBoundingClientRect();zoom(Math.exp(-e.deltaY*.0015),e.clientX-r.left,e.clientY-r.top)},{passive:false});
+canvas.addEventListener('wheel',e=>{if(e.target.closest('#nodesP,#notesP'))return;e.preventDefault();const r=canvas.getBoundingClientRect();zoom(Math.exp(-e.deltaY*.0015),e.clientX-r.left,e.clientY-r.top)},{passive:false});
 const mid=()=>[canvas.clientWidth/2,canvas.clientHeight/2];$('#zi').onclick=()=>zoom(1.2,...mid());$('#zo').onclick=()=>zoom(1/1.2,...mid());
 $('#fit').onclick=()=>{if(!T.nodes.length)return;const x0=Math.min(...T.nodes.map(n=>n.x)),y0=Math.min(...T.nodes.map(n=>n.y)),bw=Math.max(...T.nodes.map(n=>n.x+geo(n).w))-x0,bh=Math.max(...T.nodes.map(n=>n.y+nh(n)))-y0;
  const s=Math.min(1.2,Math.max(.25,Math.min((canvas.clientWidth-100)/bw,(canvas.clientHeight-140)/bh)));T.view={s,x:(canvas.clientWidth-bw*s)/2-x0*s,y:(canvas.clientHeight-bh*s)/2-y0*s};applyView();save()};
@@ -513,7 +521,7 @@ addEventListener('pointercancel',()=>{drag=null;$('#marq').style.display='none'}
 addEventListener('blur',()=>{drag=null;$('#marq').style.display='none'});
 const refreshSel=()=>{world.querySelectorAll('.node').forEach(el=>el.classList.toggle('sel',sel.has(el.dataset.id)));applyHL()};
 canvas.addEventListener('pointermove',e=>{mouse={x:e.clientX,y:e.clientY}});canvas.addEventListener('pointerleave',()=>mouse=null);
-canvas.addEventListener('pointerdown',e=>{const t=e.target;if(e.button>1||t.closest('#toolbar,#nodesP')||t.dataset.act||t.tagName==='INPUT')return;
+canvas.addEventListener('pointerdown',e=>{const t=e.target;if(e.button>1||t.closest('#toolbar,#nodesP,#notesP')||t.dataset.act||t.tagName==='INPUT')return;
  const port=t.closest('.port'),node=t.closest('.node');
  if(e.button===1)drag={type:'marq',x0:e.clientX,y0:e.clientY,add:e.shiftKey};
  else if(port)drag={type:'link',id:node.dataset.id,side:port.dataset.side,i:+port.dataset.i,sx:e.clientX,sy:e.clientY};
@@ -541,7 +549,7 @@ addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;
   if(tp&&tp.dataset.side!==d.side&&tn.dataset.id!==d.id){
    const[f,fi,t,ti]=d.side==='out'?[d.id,d.i,tn.dataset.id,+tp.dataset.i]:[tn.dataset.id,+tp.dataset.i,d.id,d.i],a=ptype(f,'out',fi),b=ptype(t,'in',ti);
    if(!okT(a,b))toast(`Can't link ${a} to ${b}`);else if(!T.edges.some(x=>x.from===f&&x.fi===fi&&x.to===t&&x.ti===ti))T.edges.push({id:uid(),from:f,fi,to:t,ti})}
-  else if(!tp&&d.side==='out'&&Math.hypot(e.clientX-d.sx,e.clientY-d.sy)>24&&el&&el.closest('#canvas')&&!el.closest('.node,#toolbar,#nodesP')){
+  else if(!tp&&d.side==='out'&&Math.hypot(e.clientX-d.sx,e.clientY-d.sy)>24&&el&&el.closest('#canvas')&&!el.closest('.node,#toolbar,#nodesP,#notesP')){
    const[wx,wy]=w2(e.clientX,e.clientY),s={id:uid(),kind:'store',x:posRound(wx),y:posRound(wy-22)};T.nodes.push(s);T.edges.push({id:uid(),from:d.id,fi:d.i,to:s.id,ti:0})}
   render()}save()});
 function copySel(){if(!sel.size){toast('Select blocks first (Shift+drag or ⬚ Select)');return}clip={nodes:cl(T.nodes.filter(n=>sel.has(n.id))),edges:cl(T.edges.filter(e=>sel.has(e.from)&&sel.has(e.to))),n:0};toast(`Copied ${clip.nodes.length} block${clip.nodes.length>1?'s':''}`)}
@@ -622,13 +630,16 @@ $('#tabs').onclick=e=>{const t=e.target;if(t.dataset.dup){dupTab(t.dataset.dup);
  const tab=t.closest('.tab');if(tab&&t.tagName!=='INPUT'&&tab.dataset.id!==S.active){S.active=tab.dataset.id;applyTab();save()}};
 $('#tabs').ondblclick=e=>{const tab=e.target.closest('.tab');if(tab&&!e.target.dataset.close&&e.target.tagName!=='INPUT'){renaming=tab.dataset.id;renderTabs()}};
 // ---- resource nodes panel + save/load
-$('#nodesBtn').onclick=()=>{const n=$('#nodesP');n.style.display=n.style.display==='block'?'none':'block';renderNodes()};
+$('#nodesBtn').onclick=()=>{const n=$('#nodesP');n.style.display=n.style.display==='block'?'none':'block';$('#notesP').style.display='none';renderNodes()};
 $('#nodesX').onclick=()=>$('#nodesP').style.display='none';
-$('#npB').onclick=e=>{const b=e.target.closest('[data-nd]');if(!b)return;const[k,p,d]=b.dataset.nd.split('|'),o=S.nodes[k]=S.nodes[k]||{i:0,n:0,p:0};o[p]=Math.max(0,(o[p]||0)+ +d);save();summary();renderNodes()};
+$('#notesBtn').onclick=()=>{const n=$('#notesP'),o=n.style.display!=='block';n.style.display=o?'block':'none';if(o){$('#nodesP').style.display='none';const t=$('#notesT');t.value=S.notes||'';t.focus()}};
+$('#notesX').onclick=()=>$('#notesP').style.display='none';
+$('#notesT').oninput=e=>{S.notes=e.target.value;persist()};
+$('#npB').onclick=e=>{const b=e.target.closest('[data-nd]');if(!b)return;const[k,p,d]=b.dataset.nd.split('|'),o=S.nodes[k]=S.nodes[k]||{i:0,n:0,p:0,u:0};o[p]=Math.max(0,(o[p]||0)+ +d);save();summary();renderNodes()};
 $('#data').onclick=()=>{modal.innerHTML=`<div class="box"><h3>Save / Load</h3><p class="tiny">Everything (all tabs, recipes, buildings, resource nodes) auto-saves in this browser. To back up or move it, copy this text. To restore, paste a saved design and press Load.</p><textarea id="j" style="height:240px;font:12px monospace">${esc(JSON.stringify(S,null,1))}</textarea><div class="act2"><button id="j-c">Copy</button><button id="j-l" class="primary">Load</button><button id="j-x">Close</button></div></div>`;modal.style.display='flex';modal.oninput=null;
  modal.onclick=e=>{const t=e.target;if(t===modal||t.id==='j-x')closeM();
   else if(t.id==='j-c'){const ta=$('#j');ta.select();try{navigator.clipboard.writeText(ta.value).catch(()=>document.execCommand('copy'))}catch(x){document.execCommand('copy')}t.textContent='Copied'}
-  else if(t.id==='j-l'){try{const o=migrate(JSON.parse($('#j').value));if(!o)throw 0;ensureDB(o);S=o;T=S.tabs.find(x=>x.id===S.active);pruneAll();closeM();renderList();applyTab();save()}catch(x){toast('That does not look like a saved design')}}}};
+  else if(t.id==='j-l'){try{const o=migrate(JSON.parse($('#j').value));if(!o)throw 0;ensureDB(o);S=o;T=S.tabs.find(x=>x.id===S.active);pruneAll();closeM();$('#notesT').value=S.notes||'';renderList();applyTab();save()}catch(x){toast('That does not look like a saved design')}}}};
 document.querySelectorAll('i[data-ic]').forEach(el=>el.outerHTML=ico(el.dataset.ic,16));
 pruneAll();last=snapStr();renderList();applyTab();hist();
 
@@ -643,7 +654,7 @@ function applyRemote(d){let o;try{o=migrate(JSON.parse(d.data))}catch(e){o=null}
  if(!o){toast('Could not read the online copy');return false}
  ensureDB(o);if(!o.tabs.some(t=>t.id===o.active))o.active=o.tabs[0].id;
  S=o;undoS=[];redoS=[];pruneAll();renderList();applyTab();last=snapStr();hist();
- baseAt=d.savedAt;lsSet(KEY,JSON.stringify(S));lsSet(LSB,String(baseAt));lsSet(LSD,'0');if(homeOpen())renderHome();return true}
+ baseAt=d.savedAt;lsSet(KEY,JSON.stringify(S));lsSet(LSB,String(baseAt));lsSet(LSD,'0');{const nt=document.getElementById('notesT');if(nt)nt.value=S.notes||''}if(homeOpen())renderHome();return true}
 function pushRemote(){if(!USER||!syncOK||!window.FB)return;clearTimeout(pushT);setSync('☁ saving…');pushT=setTimeout(()=>flush(),1200)}
 async function flush(force){clearTimeout(pushT);pushT=0;if(!USER||!syncOK||!window.FB)return;
  if(pushing){pushT=setTimeout(()=>flush(force),600);return}
@@ -710,7 +721,7 @@ function openSearch(cx,cy){const [wx,wy]=w2(cx,cy);
  const inp=$('#cs');inp.focus();draw();inp.oninput=()=>{idx=0;draw()};
  inp.onkeydown=e=>{e.stopPropagation();if(e.key==='ArrowDown'){idx=Math.min(res.length-1,idx+1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){idx=Math.max(0,idx-1);draw();e.preventDefault()}else if(e.key==='Enter')pick(idx);else if(e.key==='Escape')closeCtx()};
  el.onclick=e=>{const c=e.target.closest('.ci[data-i]');if(c)pick(+c.dataset.i)}}
-canvas.addEventListener('contextmenu',e=>{if(e.target.closest('#toolbar,#nodesP,.e,.eh,.transport'))return;e.preventDefault();const nd=e.target.closest('.node');if(nd)openStats(nd.dataset.id,e.clientX,e.clientY);else{closeSC();openSearch(e.clientX,e.clientY)}});
+canvas.addEventListener('contextmenu',e=>{if(e.target.closest('#toolbar,#nodesP,#notesP,.e,.eh,.transport'))return;e.preventDefault();const nd=e.target.closest('.node');if(nd)openStats(nd.dataset.id,e.clientX,e.clientY);else{closeSC();openSearch(e.clientX,e.clientY)}});
 $('#newF').onclick=()=>{const id=uid();S.folders.push({id,name:'New folder'});fedit=id;renderList();save()};
 const prevListClick=$('#list').onclick;
 $('#list').onclick=e=>{const t=e.target,fh=t.closest('.fold');
@@ -733,7 +744,7 @@ function renderHome(){const st=S.tabs.map(tabStats),tot={pw:0,pg:0,mc:0,by:{},ra
  const art=heroArt();
  const cards=S.tabs.map((t,i)=>{const s=st[i];return`<div class="fc" data-t="${t.id}">${preview(t)}<div class="fb">${hedit===t.id?`<input id="hn" value="${esc(t.name)}">`:`<b>${esc(t.name)}</b>`}<small>${s.blocks} blocks · ${s.mc} machines</small>${s.raw.length?`<small>Needs ${s.raw.slice(0,3).map(([n,v])=>esc(n)+' '+fmt(v)+'/min').join(' · ')}${s.raw.length>3?' · +'+(s.raw.length-3)+' more':''}</small>`:''}</div><div class="fa"><button class="primary" data-open="${t.id}">Open</button><button data-hdup="${t.id}" title="Duplicate factory">⧉</button>${IX.worlds.length>1?`<button data-hcp="${t.id}" title="Copy to another world">➜</button>`:''}<button data-hren="${t.id}" title="Rename">${ico('edit',14)}</button><button data-hdel="${t.id}" ${S.tabs.length>1?'':'disabled'} title="Delete factory">${ico('trash',14)}</button></div></div>`}).join('');
  const by=Object.entries(tot.by).sort((a,b)=>b[1]-a[1]).map(([b,n])=>`<tr><td>${esc(b)}</td><td>${n}</td></tr>`).join(''),raw=Object.entries(tot.raw).sort().map(([n,v])=>`<tr><td>${esc(n)}</td><td>${fmt(v)}/min</td></tr>`).join('');
- $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.6</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
+ $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.7</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
  <div class="qs"><button class="primary" id="h-new">+ New factory</button><button id="h-cont">Continue · ${esc(T.name)}</button><button id="h-imp">Import / Export</button><button id="h-mam">MAM research</button>${USER?'':'<button class="primary" id="h-signin">Sign in with Google</button>'}</div><p class="tiny">${USER?'Signed in as '+esc(USER.email||USER.displayName||'your Google account')+' · your work saves online automatically':'Not signed in: your work saves only in this browser. Sign in to keep it online and use it on any device.'}</p>
  <section class="about"><h2>About the planner</h2><p>Satisfactory Planner is a node-graph editor for production lines. Place recipes, link them together, and the flow of every item, the power draw and any shortages update live.</p><ul><li><b>Spoiler-free recipes</b> that unlock as you mark milestones complete in the ★ Progress window.</li><li><b>MAM research</b> trees that unlock recipes as you research them, without spoilers.</li><li><b>Custom recipes</b> with your own buildings from the + recipe button.</li><li><b>Belt tier badges</b> on every link, with pipes for fluids.</li><li><b>Space Elevator</b> phase materials and tier unlocks.</li><li><b>Right-click a block</b> for its stats and to upgrade it.</li><li><b>Worlds and cloud save</b> with Google sign-in.</li></ul></section>
  ${worldsHTML()}<div class="hg"><section><h2>Your factories</h2><div class="fcs">${cards}</div></section><section><h2>Totals · all factories</h2><div class="stat"><span>Power used</span><span class="value">${fmt(tot.pw)} MW</span></div><div class="stat"><span>Generated</span><span class="value">${fmt(tot.pg)} MW</span></div>${tot.pw>tot.pg+.05?`<div class="iss bad"><b>Power shortage</b><br>Short by ${fmt(tot.pw-tot.pg)} MW</div>`:''}<div class="stat"><span>Machines</span><b>${tot.mc}</b></div><h2>Buildings</h2>${by?`<table class="tbl">${by}</table>`:'<p class="tiny">No machines yet.</p>'}<h2>Raw inputs needed</h2>${raw?`<table class="tbl">${raw}</table>`:'<p class="tiny">None.</p>'}</section></div><p class="tiny" style="margin-top:22px">A feedback option will come once the app is shared with other people.</p></div>`;
@@ -868,13 +879,13 @@ function itemIcon(t,z=18){if(!t)return`<svg width="${z}" height="${z}" viewBox="
 
 // ---- v3.5 resource nodes (per world)
 function nodeUse(){const U={};S.tabs.forEach(t=>t.nodes.forEach(n=>{const r=!n.kind&&R(n.recipeId);if(!usesNode(r))return;const k=r.outputs[0].type,u=U[k]=U[k]||{i:0,n:0,p:0};u[n.pur||'n']+=n.count}));return U}
-function nodeIssues(){const U=nodeUse(),out=[];S.nodes=S.nodes||{};for(const k in U)for(const p of['i','n','p']){const have=(S.nodes[k]||{})[p]||0,u=U[k][p];if(u>have)out.push(`<div class="iss bad"><b>${esc(k)} nodes</b><br>${u} on ${PURL[p].toLowerCase()} nodes, only ${have} available</div>`)}return out}
+function nodeIssues(){const U=nodeUse(),out=[];S.nodes=S.nodes||{};for(const k in U)for(const p of['i','n','p']){const have=(S.nodes[k]||{})[p]||0,u=U[k][p];if(u>have){const uk=(S.nodes[k]||{}).u||0;out.push(`<div class="iss bad"><b>${esc(k)} nodes</b><br>${u} on ${PURL[p].toLowerCase()} nodes, only ${have} available${uk?` (${uk} of unknown purity nearby)`:''}</div>`)}}return out}
 function renderNodes(){const el=$('#nodesP');if(!el||el.style.display!=='block')return;S.nodes=S.nodes||{};const P=PR(),U=nodeUse(),need=new Set(avail().flatMap(g=>g.inputs.map(p=>p.type))),D=mamOf(P).done;
  const vis=NRES.filter(([k,a])=>a===1||S.nodes[k]||U[k]||need.has(k)||(typeof a==='string'&&(P.all||D[a])));
- $('#npB').innerHTML=vis.map(([k])=>{const h=S.nodes[k]||{i:0,n:0,p:0},u=U[k]||{i:0,n:0,p:0},th=h.i+h.n+h.p,tu=u.i+u.n+u.p,bad=['i','n','p'].some(p=>u[p]>h[p]);
-  return`<div class="nr"><div class="nrh"><b>${esc(k)}</b><span class="${bad?'neg':tu&&tu===th?'full':''}">${tu} of ${th} used</span></div><div class="nrbar"><i style="width:${th?Math.min(100,tu/th*100):tu?100:0}%" class="${bad?'bad':''}"></i></div>
-  <div class="nrp">${['i','n','p'].map(p=>`<div class="${u[p]>h[p]?'over':''}"><small>${PURL[p]}</small><span><button data-nd="${esc(k)}|${p}|-1" ${h[p]?'':'disabled'}>−</button><b>${h[p]}</b><button data-nd="${esc(k)}|${p}|1">+</button></span><small>${u[p]} used</small></div>`).join('')}</div></div>`}).join('')
-  +`<p class="tiny">Each miner or oil extractor uses one node. Click the purity tag on a miner (Impure / Normal / Pure) to set which kind it sits on. More resources show up as you progress.</p>`}
+ $('#npB').innerHTML=vis.map(([k])=>{const h={i:0,n:0,p:0,u:0,...S.nodes[k]},u=U[k]||{i:0,n:0,p:0},th=h.i+h.n+h.p,tu=u.i+u.n+u.p,bad=['i','n','p'].some(p=>u[p]>h[p]);
+  return`<div class="nr"><div class="nrh"><b>${esc(k)}</b><span class="${bad?'neg':tu&&tu===th?'full':''}">${tu} of ${th} used${h.u?` <em>+${h.u} unknown</em>`:''}</span></div><div class="nrbar"><i style="width:${th?Math.min(100,tu/th*100):tu?100:0}%" class="${bad?'bad':''}"></i></div>
+  <div class="nrp">${['i','n','p'].map(p=>`<div class="${u[p]>h[p]?'over':''}"><small>${PURL[p]}</small><span><button data-nd="${esc(k)}|${p}|-1" ${h[p]?'':'disabled'}>−</button><b>${h[p]}</b><button data-nd="${esc(k)}|${p}|1">+</button></span><small>${u[p]} used</small></div>`).join('')}<div class="unk" title="Found with the scanner, purity not checked yet. Not used by miners until you move it to a purity."><small>Unknown</small><span><button data-nd="${esc(k)}|u|-1" ${h.u?'':'disabled'}>−</button><b>${h.u}</b><button data-nd="${esc(k)}|u|1">+</button></span><small>scanned</small></div></div></div>`}).join('')
+  +`<p class="tiny">Each miner or oil extractor uses one node. Click the purity tag on a miner (Impure / Normal / Pure) to set which kind it sits on. Unknown is for nodes you've scanned but not visited: once you see one, take it off Unknown and add it to its purity. More resources show up as you progress.</p>`}
 
 // ---- v3.5 MAM research window
 let mamTree=null,mamSel=null;
