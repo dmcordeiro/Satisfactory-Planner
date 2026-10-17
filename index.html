@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <!--
-Satisfactory Planner v3.7
-Commit: v3.7: Notes are back, unknown-purity nodes
-Description: Notes popup returns next to Nodes (one note per world). Nodes panel gets an
-"Unknown" column for nodes found with the scanner but not visited yet; they show in the
-totals but don't count for miners until their purity is set.
+Satisfactory Planner v3.8
+Commit: v3.8: Color blocks
+Description: Select blocks (click, Ctrl/Shift+click or middle-drag) and pick one of 8
+colors from the bar above them to outline them with a glow. Ctrl+click now adds to the
+selection too.
 Release convention requested by Denial: include a short GitHub commit title and
 description with every future version.
 -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Satisfactory Planner v3.7</title>
+<title>Satisfactory Planner v3.8</title>
 <style>
 :root{color-scheme:dark;--bg:#11151b;--panel:#191e26;--line:#303844;--text:#e9edf1;--mute:#9aa7b8;--orange:#ffb45d;--green:#72d6b1;--red:#ff8585;--node:#222b35;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -204,6 +204,15 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
 .nrp>div.over{border-color:var(--red)}.nrp>div.over small:last-child{color:var(--red)}.nrp small{font-size:10.5px;color:var(--mute)}.nrp span{display:flex;align-items:center;gap:6px}.nrp button{padding:0 7px;line-height:20px}.nrp b{min-width:16px;text-align:center}
 .ft .pur{margin-left:auto;padding:1px 8px;font-size:11.5px;border-radius:10px}.pur.p-i{color:#e09a6b;border-color:#6b4b37}.pur.p-n{color:#cfd6db}.pur.p-p{color:#7dd3a8;border-color:#3f6b5a}
 
+/* v3.8: block colors */
+.node.tag{box-shadow:0 0 0 3px var(--tag),0 0 22px 6px color-mix(in srgb,var(--tag) 45%,transparent),0 5px 14px #0004}
+.node.tag.sel{outline-offset:5px}
+#cbar{position:absolute;z-index:6;display:none;align-items:center;gap:5px;padding:5px 7px;background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px #0007;cursor:auto;transform:translateX(-50%);white-space:nowrap}
+#cbar b{font-size:10px;letter-spacing:.08em;color:var(--mute);margin-right:2px;text-transform:uppercase}
+#cbar button{width:20px;height:20px;min-width:0;padding:0;border-radius:50%;border:2px solid #0008;background:var(--c);box-shadow:none}
+#cbar button:hover{transform:scale(1.15)}
+#cbar button.on{border-color:#fff;box-shadow:0 0 0 2px var(--c)}
+#cbar button.clr{background:transparent;border:2px dashed var(--mute);color:var(--mute);font-size:11px;line-height:1}
 /* v3.7: notes popup + unknown purity */
 #notesP{position:absolute;left:16px;bottom:64px;width:min(380px,92%);background:#25282b;border:1px solid var(--line);border-radius:10px;padding:0 12px 12px;display:none;box-shadow:0 8px 24px #0006;cursor:auto}
 #notesP textarea{width:100%;height:260px;resize:vertical;background:#11171e;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:8px;font:13px/1.45 system-ui,sans-serif}
@@ -222,7 +231,7 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
 .port.ic::after{left:-6px;right:-6px;top:-6px;bottom:-6px;border-radius:8px}
 </style></head><body>
 <div id="app">
-<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.7</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
+<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.8</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
 <div id="tabs"><div class="tab on" data-id="t1"><span>Factory 1</span></div><button id="addTab" title="New tab">+</button></div>
 <div id="home" style="display:none"></div>
 <div class="layout">
@@ -266,10 +275,10 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
  <div class="ft"><button data-act="dec">−</button><b>1</b><button data-act="inc">+</button><span>clock</span><input type="number" min="1" max="250" value="100" data-act="clock">%</div><div class="st ok">20/min Iron Plate available</div></div><div class="node" data-id="z0818lp" style="left: 724px; top: 1250px; width: 250px;"><div class="hd"><span class="em"><svg class="ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5l6 6-3 3-6-6z"></path><path d="M11 9L4 16l4 4 7-7"></path></svg></span><div><div class="ty">Constructor</div><div class="nm">Iron Rod</div></div><button class="x" data-act="del" title="Remove">×</button></div><div class="row"><span class="L"><b>15</b> Iron Ingot</span><span class="port pi" data-side="in" data-i="0"></span><span class="R">15 Iron Rod</span><span class="port po" data-side="out" data-i="0"></span></div>
  <div class="ft"><button data-act="dec">−</button><b>1</b><button data-act="inc">+</button><span>clock</span><input type="number" min="1" max="250" value="100" data-act="clock">%</div><div class="st warn">Surplus 5/min Iron Rod → add storage</div></div><div class="node" data-id="c91494s" style="left: 715px; top: 1444px; width: 250px;"><div class="hd"><span class="em"><svg class="ico" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 4.5l6 6-3 3-6-6z"></path><path d="M11 9L4 16l4 4 7-7"></path></svg></span><div><div class="ty">Constructor</div><div class="nm">Iron Rod</div></div><button class="x" data-act="del" title="Remove">×</button></div><div class="row"><span class="L"><b>15</b> Iron Ingot</span><span class="port pi" data-side="in" data-i="0"></span><span class="R">15 Iron Rod</span><span class="port po" data-side="out" data-i="0"></span></div>
  <div class="ft"><button data-act="dec">−</button><b>1</b><button data-act="inc">+</button><span>clock</span><input type="number" min="1" max="250" value="100" data-act="clock">%</div><div class="st warn">Surplus 5/min Iron Rod → add storage</div></div><div class="node" data-id="73351pk" style="left: 1058px; top: 1323px; width: 170px;"><div class="hd s"><span class="em"><svg class="ico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12h-6"></path><path d="M15 12c-4 0-4-6-8-6H3M15 12c-4 0-4 6-8 6H3"></path></svg></span><div><div class="nm">Merger</div><div class="ty">Iron Rod</div></div><button class="x" data-act="del">×</button></div><div class="row"><span class="L">10/min</span><span class="port pi" data-side="in" data-i="0"></span><span class="R">20/min</span><span class="port po" data-side="out" data-i="0"></span></div><div class="row"><span class="L">10/min</span><span class="port pi" data-side="in" data-i="1"></span><span></span></div><div class="row"><span class="L">0/min</span><span class="port pi" data-side="in" data-i="2"></span><span></span></div></div></div>
-  <div id="toolbar"><button id="zo">−</button><span id="zl">38%</span><button id="zi">+</button><button id="fit">Fit</button><button id="selBtn" title="Box-select mode (or hold Shift and drag)">⬚ Select</button><button id="hlBtn" class="primary" title="Highlight the chain of the selected block">Trace</button><button id="snapBtn" aria-pressed="false" title="Snap moved and new blocks to the 24-unit grid">Snap: off</button><button id="orgBtn" title="Organize blocks">Organize</button><button id="cpy" title="Ctrl+C">Copy</button><button id="pst" title="Ctrl+V">Paste</button><button id="nodesBtn" title="Resource nodes in this world"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19l5-9 4 5 3-4 6 8z"></path><circle cx="16" cy="6" r="2"></circle></svg> Nodes</button><button id="notesBtn" title="Notes for this world"><i data-ic="note"></i> Notes</button></div><div id="marq" style="display: none; left: 599px; top: 67px; width: 140px; height: 558px;"></div>
+  <div id="toolbar"><button id="zo">−</button><span id="zl">38%</span><button id="zi">+</button><button id="fit">Fit</button><button id="selBtn" title="Box-select mode (or hold Shift and drag)">⬚ Select</button><button id="hlBtn" class="primary" title="Highlight the chain of the selected block">Trace</button><button id="snapBtn" aria-pressed="false" title="Snap moved and new blocks to the 24-unit grid">Snap: off</button><button id="orgBtn" title="Organize blocks">Organize</button><button id="cpy" title="Ctrl+C">Copy</button><button id="pst" title="Ctrl+V">Paste</button><button id="nodesBtn" title="Resource nodes in this world"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 19l5-9 4 5 3-4 6 8z"></path><circle cx="16" cy="6" r="2"></circle></svg> Nodes</button><button id="notesBtn" title="Notes for this world"><i data-ic="note"></i> Notes</button></div><div id="cbar"></div><div id="marq" style="display: none; left: 599px; top: 67px; width: 140px; height: 558px;"></div>
   <div id="notesP"><div class="npH"><b>Notes</b><small>whole world</small><button id="notesX">✕</button></div><textarea id="notesT" placeholder="Anything worth remembering in this world: where things are, what to build next..."></textarea></div>
   <div id="nodesP"><div class="npH"><b>Resource nodes</b><small>whole world</small><button id="nodesX">✕</button></div><div id="npB"></div></div>
-  <div id="hint">S search · 6 merger · 7 splitter · Scroll to zoom · drag to pan · Middle-drag or Shift+drag to box-select · right-click empty space to search · right-click a block for stats · Ctrl+C / V copy &amp; paste · Ctrl+Z undo · double-click a line to remove it</div><div id="toast" style="display: none;">Copied 7 blocks</div></main>
+  <div id="hint">S search · 6 merger · 7 splitter · Scroll to zoom · drag to pan · Middle-drag or Shift+drag to box-select · Ctrl+click to add blocks · pick a color above a selection to tag it · right-click empty space to search · right-click a block for stats · Ctrl+C / V copy &amp; paste · Ctrl+Z undo · double-click a line to remove it</div><div id="toast" style="display: none;">Copied 7 blocks</div></main>
  <aside class="right" id="right"><h2>Totals · Factory 1</h2><div class="stat"><span style="display:flex;gap:6px;align-items:center"><svg class="ico" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L5 13h6l-1 9 8-11h-6z"></path></svg> Power</span><span class="value">193 MW</span></div><div class="stat"><span>Machines</span><b>36</b></div>
  <h2>Raw inputs needed</h2><p class="tiny">None — every input is made inside this tab.</p>
  <h2>Final outputs</h2><table class="tbl"><tbody><tr><td>Iron Ingot</td><td>60/min</td></tr><tr><td>Iron Plate</td><td>20/min</td></tr><tr><td>Modular Frame</td><td>1.7/min</td></tr><tr><td>Reinforced Iron Plate</td><td>7.5/min <small>(2.5 stored)</small></td></tr><tr><td>Rotor</td><td>4/min</td></tr></tbody></table>
@@ -460,7 +469,7 @@ function logiHTML(n){const sp=n.kind==='split',t=ltype(n.id),E=C.E,id=n.id,o=C.N
  for(let i=0;i<3;i++){const li=sp?i<1:true,ro=sp?true:i<1;const vi=fi(i),vo=sp?fo(i):(used?fo(0):(o?o.A:0));h+=rowH(i,li&&{h:`${fmt(vi)}/min`,t,ti:`${fmt(vi)}/min ${t||'any item'}`},ro&&{h:`${fmt(vo)}/min`,t,ti:`${fmt(vo)}/min ${t||'any item'}`,f:!sp&&!used&&o&&o.A>.01})}
  return `<div class="hd s"><span class="em">${ico(sp?'split':'merge',22)}</span><div title="${esc(t||'any item')}"><div class="nm">${sp?'Splitter':'Merger'}</div><div class="ty">${esc(t||'any item')}</div></div><button class="x" data-act="del">×</button></div>${h}`}
 function render(){calc();world.querySelectorAll('.node').forEach(e=>e.remove());
- T.nodes.forEach(n=>{const o=C.N[n.id];if(!o)return;const el=document.createElement('div'),g=geo(n);el.className='node'+(n.kind==='store'?' store':'')+(sel.has(n.id)?' sel':'');el.style.cssText=`left:${n.x}px;top:${n.y}px;width:${g.w}px`;el.dataset.id=n.id;
+ T.nodes.forEach(n=>{const o=C.N[n.id];if(!o)return;const el=document.createElement('div'),g=geo(n);el.className='node'+(n.kind==='store'?' store':'')+(sel.has(n.id)?' sel':'')+(TAGC[n.color]?' tag':'');el.style.cssText=`left:${n.x}px;top:${n.y}px;width:${g.w}px`+(TAGC[n.color]?`;--tag:${TAGC[n.color]}`:'');el.dataset.id=n.id;
   if(n.kind==='store'){el.title='Storage — double-click a line to unlink, × to remove';el.innerHTML=`<span class="port" data-side="in" data-i="0" style="left:-7px"></span><button class="x" data-act="del">×</button><div>${ico('store',18)}<small>${fmt(o.A)}</small></div>`}
   else el.innerHTML=n.kind?logiHTML(n):machineHTML(n,o);
   world.appendChild(el)});applyHL();summary();renderNodes()}
@@ -500,7 +509,7 @@ function summary(){let pw=0,pg=0,mc=0,iss='';const made={},need={},sup={},free={
  <h2>Item balance</h2>${bal?`<table class="tbl"><tr><th></th><th>made</th><th>used</th><th>net</th></tr>${bal}</table>`:'<p class="tiny">Place buildings to see totals.</p>'}
  <h2>Needs attention</h2>${iss||'<p class="tiny">Nothing — inputs are satisfied and nothing is overproducing.</p>'}`}
 // ---- view
-function applyView(){const v=T.view;world.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.s})`;canvas.style.backgroundPosition=`${v.x}px ${v.y}px`;canvas.style.backgroundSize=`${24*v.s}px ${24*v.s}px`;$('#zl').textContent=Math.round(v.s*100)+'%'}
+function applyView(){const v=T.view;world.style.transform=`translate(${v.x}px,${v.y}px) scale(${v.s})`;canvas.style.backgroundPosition=`${v.x}px ${v.y}px`;canvas.style.backgroundSize=`${24*v.s}px ${24*v.s}px`;$('#zl').textContent=Math.round(v.s*100)+'%';placeCB()}
 function zoom(k,mx,my){const v=T.view,s=Math.min(2,Math.max(.25,v.s*k));v.x=mx-(mx-v.x)*s/v.s;v.y=my-(my-v.y)*s/v.s;v.s=s;applyView();save()}
 canvas.addEventListener('wheel',e=>{if(e.target.closest('#nodesP,#notesP'))return;e.preventDefault();const r=canvas.getBoundingClientRect();zoom(Math.exp(-e.deltaY*.0015),e.clientX-r.left,e.clientY-r.top)},{passive:false});
 const mid=()=>[canvas.clientWidth/2,canvas.clientHeight/2];$('#zi').onclick=()=>zoom(1.2,...mid());$('#zo').onclick=()=>zoom(1/1.2,...mid());
@@ -517,26 +526,37 @@ $('#snapBtn').onclick=()=>{snapOn=!snapOn;try{localStorage.setItem('fd32-snap',s
 let drag=null;
 canvas.addEventListener('mousedown',e=>{if(e.button===1)e.preventDefault()});
 canvas.addEventListener('auxclick',e=>{if(e.button===1)e.preventDefault()});
-addEventListener('pointercancel',()=>{drag=null;$('#marq').style.display='none'});
+addEventListener('pointercancel',()=>{drag=null;$('#marq').style.display='none';placeCB()});
 addEventListener('blur',()=>{drag=null;$('#marq').style.display='none'});
-const refreshSel=()=>{world.querySelectorAll('.node').forEach(el=>el.classList.toggle('sel',sel.has(el.dataset.id)));applyHL()};
+/* v3.8 block colors */
+const TAGC={red:'#ff5c5c',yellow:'#f5d547',lime:'#a6e34a',green:'#3fcf7a',cyan:'#36d2d8',blue:'#4f9dff',purple:'#a982ff',pink:'#ff6fc4'};
+function placeCB(){let b;try{b=$('#cbar')}catch(e){return}if(!b)return;try{
+ const ns=T.nodes.filter(n=>sel.has(n.id));if(!ns.length||(drag&&drag.type==='marq')||(typeof homeOpen==='function'&&homeOpen())){b.style.display='none';return}
+ const v=T.view,x0=Math.min(...ns.map(n=>n.x)),x1=Math.max(...ns.map(n=>n.x+geo(n).w)),y0=Math.min(...ns.map(n=>n.y)),y1=Math.max(...ns.map(n=>n.y+nh(n)));
+ const one=ns.every(n=>n.color===ns[0].color)?ns[0].color:null,key=Object.keys(TAGC).map(k=>k===one?1:0).join('')+ns.length;
+ if(b.dataset.k!==key){b.dataset.k=key;b.innerHTML=`<b>Color</b>`+Object.entries(TAGC).map(([k,c])=>`<button data-tag="${k}" title="${k[0].toUpperCase()+k.slice(1)}" class="${k===one?'on':''}" style="--c:${c}"></button>`).join('')+`<button class="clr" data-tag="" title="Remove color">✕</button>`}
+ b.style.display='flex';const cw=canvas.clientWidth,bw=b.offsetWidth||260,bh=b.offsetHeight||32;let x=v.x+(x0+x1)/2*v.s,y=v.y+y0*v.s-bh-14;
+ if(y<6)y=v.y+y1*v.s+12;x=Math.max(bw/2+6,Math.min(cw-bw/2-6,x));y=Math.max(6,Math.min(canvas.clientHeight-bh-6,y));b.style.left=x+'px';b.style.top=y+'px'}catch(e){b.style.display='none'}}
+document.addEventListener('pointerdown',e=>{const bt=e.target.closest&&e.target.closest('#cbar button');if(!bt)return;e.preventDefault();e.stopPropagation();const k=bt.dataset.tag;
+ T.nodes.forEach(n=>{if(sel.has(n.id)){if(k)n.color=k;else delete n.color}});render();save()},true);
+const refreshSel=()=>{world.querySelectorAll('.node').forEach(el=>el.classList.toggle('sel',sel.has(el.dataset.id)));applyHL();placeCB()};
 canvas.addEventListener('pointermove',e=>{mouse={x:e.clientX,y:e.clientY}});canvas.addEventListener('pointerleave',()=>mouse=null);
-canvas.addEventListener('pointerdown',e=>{const t=e.target;if(e.button>1||t.closest('#toolbar,#nodesP,#notesP')||t.dataset.act||t.tagName==='INPUT')return;
+canvas.addEventListener('pointerdown',e=>{const t=e.target;if(e.button>1||t.closest('#toolbar,#nodesP,#notesP,#cbar')||t.dataset.act||t.tagName==='INPUT')return;
  const port=t.closest('.port'),node=t.closest('.node');
- if(e.button===1)drag={type:'marq',x0:e.clientX,y0:e.clientY,add:e.shiftKey};
+ if(e.button===1){drag={type:'marq',x0:e.clientX,y0:e.clientY,add:e.shiftKey||e.ctrlKey||e.metaKey};placeCB()}
  else if(port)drag={type:'link',id:node.dataset.id,side:port.dataset.side,i:+port.dataset.i,sx:e.clientX,sy:e.clientY};
- else if(node){const id=node.dataset.id;e.preventDefault();if(e.shiftKey){sel.has(id)?sel.delete(id):sel.add(id);refreshSel();return}
+ else if(node){const id=node.dataset.id;e.preventDefault();if(e.shiftKey||e.ctrlKey||e.metaKey){sel.has(id)?sel.delete(id):sel.add(id);refreshSel();return}
   if(!sel.has(id)){sel=new Set([id]);refreshSel()}const[wx,wy]=w2(e.clientX,e.clientY);
   drag={type:'node',wx,wy,starts:T.nodes.filter(n=>sel.has(n.id)).map(n=>({n,x:n.x,y:n.y})),els:[...world.querySelectorAll('.node')].filter(el=>sel.has(el.dataset.id))}}
- else if(!t.closest('.e,.eh,.transport')){if(e.shiftKey||selMode)drag={type:'marq',x0:e.clientX,y0:e.clientY,add:e.shiftKey};else{if(sel.size){sel=new Set();refreshSel()}drag={type:'pan',sx:e.clientX-T.view.x,sy:e.clientY-T.view.y}}}
+ else if(!t.closest('.e,.eh,.transport')){if(e.shiftKey||selMode){drag={type:'marq',x0:e.clientX,y0:e.clientY,add:e.shiftKey||e.ctrlKey||e.metaKey};placeCB()}else{if(sel.size){sel=new Set();refreshSel()}drag={type:'pan',sx:e.clientX-T.view.x,sy:e.clientY-T.view.y}}}
  if(drag)e.preventDefault()});
 addEventListener('pointermove',e=>{if(!drag)return;
  if(drag.type==='pan'){T.view.x=e.clientX-drag.sx;T.view.y=e.clientY-drag.sy;applyView()}
- else if(drag.type==='node'){const[wx,wy]=w2(e.clientX,e.clientY);drag.starts.forEach(s=>{s.n.x=posRound(s.x+wx-drag.wx);s.n.y=posRound(s.y+wy-drag.wy)});drag.els.forEach(el=>{const n=NODE(el.dataset.id);el.style.left=n.x+'px';el.style.top=n.y+'px'});drawEdges()}
+ else if(drag.type==='node'){const[wx,wy]=w2(e.clientX,e.clientY);drag.starts.forEach(s=>{s.n.x=posRound(s.x+wx-drag.wx);s.n.y=posRound(s.y+wy-drag.wy)});drag.els.forEach(el=>{const n=NODE(el.dataset.id);el.style.left=n.x+'px';el.style.top=n.y+'px'});drawEdges();placeCB()}
  else if(drag.type==='marq'){const r=canvas.getBoundingClientRect(),m=$('#marq');m.style.display='block';m.style.left=Math.min(drag.x0,e.clientX)-r.left+'px';m.style.top=Math.min(drag.y0,e.clientY)-r.top+'px';m.style.width=Math.abs(e.clientX-drag.x0)+'px';m.style.height=Math.abs(e.clientY-drag.y0)+'px'}
  else{const[x1,y1]=anc(NODE(drag.id),drag.side,drag.i),[x2,y2]=w2(e.clientX,e.clientY),a=drag.side==='out'?[x1,y1,x2,y2]:[x2,y2,x1,y1];
   drawEdges();svg.insertAdjacentHTML('beforeend',`<path class="e" style="pointer-events:none;stroke:var(--orange)" d="${bez(...a)}"/>`)}});
-addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;
+addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;if(d.type!=='marq')placeCB();
  if(d.type==='marq'){$('#marq').style.display='none';const[xa,ya]=w2(Math.min(d.x0,e.clientX),Math.min(d.y0,e.clientY)),[xb,yb]=w2(Math.max(d.x0,e.clientX),Math.max(d.y0,e.clientY));
   const hit=T.nodes.filter(n=>n.x<xb&&n.x+geo(n).w>xa&&n.y<yb&&n.y+nh(n)>ya).map(n=>n.id);sel=d.add?new Set([...sel,...hit]):new Set(hit);refreshSel()}
  if(d.type==='link'){const el=document.elementFromPoint(e.clientX,e.clientY);let tp=el&&el.closest('.port'),tn=tp&&tp.closest('.node');
@@ -621,6 +641,7 @@ addEventListener('keydown',e=>{if(modal.style.display!=='flex')return;const id=e
  else if(inDD&&(e.key==='ArrowDown'||e.key==='ArrowUp')){e.preventDefault();l.hidden=false;const bs=[...l.querySelectorAll('button')],i=bs.indexOf(document.activeElement);bs[e.key==='ArrowDown'?Math.min(bs.length-1,i+1):Math.max(0,i-1)].focus()}
  else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)&&$('#f-s'))$('#f-s').click()});
 // ---- tabs
+const _render38=render;render=function(){_render38.apply(this,arguments);placeCB()};
 function applyTab(){sel=new Set();T=S.tabs.find(t=>t.id===S.active);applyView();renderTabs();render()}
 function renderTabs(){$('#tabs').innerHTML=S.tabs.map(t=>`<div class="tab${t.id===S.active?' on':''}" data-id="${t.id}">${renaming===t.id?`<input id="rn" value="${esc(t.name)}">`:`<span>${esc(t.name)}</span><b class="rn" data-rename="${t.id}" title="Rename">✎</b><b class="rn" data-dup="${t.id}" title="Duplicate">⧉</b>`}${S.tabs.length>1?`<b class="cl" data-close="${t.id}" title="Close tab">×</b>`:''}</div>`).join('')+'<button id="addTab" title="New tab">+</button>';
  if(renaming){const i=$('#rn');i.focus();i.select();const done=()=>{if(!renaming)return;const t=S.tabs.find(x=>x.id===renaming);t.name=i.value.trim()||t.name;renaming=null;renderTabs();summary();save()};i.onblur=done;i.onkeydown=e=>{if(e.key==='Enter')done();if(e.key==='Escape'){renaming=null;renderTabs()}}}}
@@ -721,7 +742,7 @@ function openSearch(cx,cy){const [wx,wy]=w2(cx,cy);
  const inp=$('#cs');inp.focus();draw();inp.oninput=()=>{idx=0;draw()};
  inp.onkeydown=e=>{e.stopPropagation();if(e.key==='ArrowDown'){idx=Math.min(res.length-1,idx+1);draw();e.preventDefault()}else if(e.key==='ArrowUp'){idx=Math.max(0,idx-1);draw();e.preventDefault()}else if(e.key==='Enter')pick(idx);else if(e.key==='Escape')closeCtx()};
  el.onclick=e=>{const c=e.target.closest('.ci[data-i]');if(c)pick(+c.dataset.i)}}
-canvas.addEventListener('contextmenu',e=>{if(e.target.closest('#toolbar,#nodesP,#notesP,.e,.eh,.transport'))return;e.preventDefault();const nd=e.target.closest('.node');if(nd)openStats(nd.dataset.id,e.clientX,e.clientY);else{closeSC();openSearch(e.clientX,e.clientY)}});
+canvas.addEventListener('contextmenu',e=>{if(e.target.closest('#cbar')){e.preventDefault();return}if(e.ctrlKey&&e.button===0){e.preventDefault();return}if(e.target.closest('#toolbar,#nodesP,#notesP,.e,.eh,.transport'))return;e.preventDefault();const nd=e.target.closest('.node');if(nd)openStats(nd.dataset.id,e.clientX,e.clientY);else{closeSC();openSearch(e.clientX,e.clientY)}});
 $('#newF').onclick=()=>{const id=uid();S.folders.push({id,name:'New folder'});fedit=id;renderList();save()};
 const prevListClick=$('#list').onclick;
 $('#list').onclick=e=>{const t=e.target,fh=t.closest('.fold');
@@ -744,7 +765,7 @@ function renderHome(){const st=S.tabs.map(tabStats),tot={pw:0,pg:0,mc:0,by:{},ra
  const art=heroArt();
  const cards=S.tabs.map((t,i)=>{const s=st[i];return`<div class="fc" data-t="${t.id}">${preview(t)}<div class="fb">${hedit===t.id?`<input id="hn" value="${esc(t.name)}">`:`<b>${esc(t.name)}</b>`}<small>${s.blocks} blocks · ${s.mc} machines</small>${s.raw.length?`<small>Needs ${s.raw.slice(0,3).map(([n,v])=>esc(n)+' '+fmt(v)+'/min').join(' · ')}${s.raw.length>3?' · +'+(s.raw.length-3)+' more':''}</small>`:''}</div><div class="fa"><button class="primary" data-open="${t.id}">Open</button><button data-hdup="${t.id}" title="Duplicate factory">⧉</button>${IX.worlds.length>1?`<button data-hcp="${t.id}" title="Copy to another world">➜</button>`:''}<button data-hren="${t.id}" title="Rename">${ico('edit',14)}</button><button data-hdel="${t.id}" ${S.tabs.length>1?'':'disabled'} title="Delete factory">${ico('trash',14)}</button></div></div>`}).join('');
  const by=Object.entries(tot.by).sort((a,b)=>b[1]-a[1]).map(([b,n])=>`<tr><td>${esc(b)}</td><td>${n}</td></tr>`).join(''),raw=Object.entries(tot.raw).sort().map(([n,v])=>`<tr><td>${esc(n)}</td><td>${fmt(v)}/min</td></tr>`).join('');
- $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.7</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
+ $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.8</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
  <div class="qs"><button class="primary" id="h-new">+ New factory</button><button id="h-cont">Continue · ${esc(T.name)}</button><button id="h-imp">Import / Export</button><button id="h-mam">MAM research</button>${USER?'':'<button class="primary" id="h-signin">Sign in with Google</button>'}</div><p class="tiny">${USER?'Signed in as '+esc(USER.email||USER.displayName||'your Google account')+' · your work saves online automatically':'Not signed in: your work saves only in this browser. Sign in to keep it online and use it on any device.'}</p>
  <section class="about"><h2>About the planner</h2><p>Satisfactory Planner is a node-graph editor for production lines. Place recipes, link them together, and the flow of every item, the power draw and any shortages update live.</p><ul><li><b>Spoiler-free recipes</b> that unlock as you mark milestones complete in the ★ Progress window.</li><li><b>MAM research</b> trees that unlock recipes as you research them, without spoilers.</li><li><b>Custom recipes</b> with your own buildings from the + recipe button.</li><li><b>Belt tier badges</b> on every link, with pipes for fluids.</li><li><b>Space Elevator</b> phase materials and tier unlocks.</li><li><b>Right-click a block</b> for its stats and to upgrade it.</li><li><b>Worlds and cloud save</b> with Google sign-in.</li></ul></section>
  ${worldsHTML()}<div class="hg"><section><h2>Your factories</h2><div class="fcs">${cards}</div></section><section><h2>Totals · all factories</h2><div class="stat"><span>Power used</span><span class="value">${fmt(tot.pw)} MW</span></div><div class="stat"><span>Generated</span><span class="value">${fmt(tot.pg)} MW</span></div>${tot.pw>tot.pg+.05?`<div class="iss bad"><b>Power shortage</b><br>Short by ${fmt(tot.pw-tot.pg)} MW</div>`:''}<div class="stat"><span>Machines</span><b>${tot.mc}</b></div><h2>Buildings</h2>${by?`<table class="tbl">${by}</table>`:'<p class="tiny">No machines yet.</p>'}<h2>Raw inputs needed</h2>${raw?`<table class="tbl">${raw}</table>`:'<p class="tiny">None.</p>'}</section></div><p class="tiny" style="margin-top:22px">A feedback option will come once the app is shared with other people.</p></div>`;
