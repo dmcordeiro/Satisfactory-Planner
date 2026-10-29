@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <!--
-Satisfactory Planner v3.13
-Commit: v3.13: Surplus shows through chained mergers
-Description: Extra output that a chain of mergers/splitters can't pass on is now traced
-back to the machines making it, so they show the surplus and the add-storage warning.
+Satisfactory Planner v3.14
+Commit: v3.14: Final outputs reflect unlinked inputs
+Description: A machine with an unlinked input now makes nothing, so lines, Final outputs
+and Item balance show what is really produced. Cards still show the rated output with
+a red ▼ actual figure.
 Release convention requested by Denial: include a short GitHub commit title and
 description with every future version.
 -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Satisfactory Planner v3.13</title>
+<title>Satisfactory Planner v3.14</title>
 <style>
 :root{color-scheme:dark;--bg:#11151b;--panel:#191e26;--line:#303844;--text:#e9edf1;--mute:#9aa7b8;--orange:#ffb45d;--green:#72d6b1;--red:#ff8585;--node:#222b35;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -235,7 +236,7 @@ header .brand small{font:600 12px/1 "Segoe UI",Roboto,Arial,sans-serif;letter-sp
 .port.ic::after{left:-6px;right:-6px;top:-6px;bottom:-6px;border-radius:8px}
 </style></head><body>
 <div id="app">
-<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.13</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
+<header><div class="brand" id="homeBtn" title="Home" style="cursor:pointer">SATISFACTORY PLANNER<small>v3.14</small><small id="sync" style="margin-left:10px"></small></div><div class="act"><button id="progBtn">★ Progress</button><button id="mamBtn" title="MAM research"><svg class="ico" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6l-5.5 10a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"></path><path d="M7.5 15h9"></path></svg> MAM</button><button id="undo" title="Undo (Ctrl+Z)">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" disabled="">↷ Redo</button><button id="data">Save / Load</button><button id="auth">Sign in with Google</button></div></header>
 <div id="tabs"><div class="tab on" data-id="t1"><span>Factory 1</span></div><button id="addTab" title="New tab">+</button></div>
 <div id="home" style="display:none"></div>
 <div class="layout">
@@ -456,21 +457,24 @@ function calc(){const N={};
   for(let ch=true,k=0;ch&&k<50;k++){ch=false;for(const id in N){if(N[id].kind!=='merge'&&N[id].kind!=='split')continue;const oe=E.filter(e=>e.from===id);if(oe.length&&oe.every(e=>e.sat)){E.filter(e=>e.to===id&&!e.sat).forEach(e=>{e.sat=true;ch=true})}}}
   for(const id in N){const o=N[id];if(o.kind)continue;o.need=o.r.inputs.map(p=>p.qty*o.f);
    o.sup=o.r.inputs.map((p,i)=>E.filter(e=>e.to===id&&e.ti===i).reduce((s,e)=>s+e.flow,0));
-   o.unl=o.r.inputs.map((p,i)=>!E.some(e=>e.to===id&&e.ti===i));o.eff=o.r.inputs.length?Math.min(...o.sup.map((x,i)=>o.unl[i]||!o.need[i]?1:Math.min(1,x/o.need[i]))):1}}
+   o.unl=o.r.inputs.map((p,i)=>!E.some(e=>e.to===id&&e.ti===i));o.effL=o.r.inputs.length?Math.min(...o.sup.map((x,i)=>o.unl[i]||!o.need[i]?1:Math.min(1,x/o.need[i]))):1;
+   /* v3.14: an unlinked input counts as 0 supplied, so the machine really makes nothing (lines, final outputs, balance) */
+   o.eff=o.unl.some((u,i)=>u&&o.need[i]>1e-9)?0:o.effL}}
   /* v3.13 (after the solve): push unused flow back upstream through mergers/splitters so the producing machine shows its surplus */
   for(let ch=true,k=0;ch&&k<50;k++){ch=false;for(const id in N){const o=N[id];if(o.kind!=='merge'&&o.kind!=='split')continue;const ie=E.filter(e=>e.to===id),oe=E.filter(e=>e.from===id);if(!oe.length||!ie.length)continue;
    const fi=ie.reduce((s,e)=>s+e.flow,0),fo=oe.reduce((s,e)=>s+e.flow,0);if(fi>fo+1e-6){ie.forEach(e=>e.flow*=fo/fi);ch=true}}}
  for(const id in N){const o=N[id];if(o.kind)o.A=E.filter(e=>e.to===id).reduce((s,e)=>s+e.flow,0)}
  C={N,E}}
-function status(n,o){if(o.eff<.999)return['bad',`Input shortage · ${Math.round(o.eff*100)}% supplied`];const ul=(o.unl||[]).map((u,i)=>u?o.r.inputs[i].type:null).filter(Boolean);
+function status(n,o){if(o.effL<.999)return['bad',`Input shortage · ${Math.round(o.effL*100)}% supplied`];const ul=(o.unl||[]).map((u,i)=>u?o.r.inputs[i].type:null).filter(Boolean);
+ if(ul.length)return['warn',`Not linked yet: ${ul.join(', ')} · makes nothing until linked`];
  const sur=[],free=[];o.r.outputs.forEach((p,i)=>{const es=C.E.filter(e=>e.from===n.id&&e.fi===i);if(!es.length){free.push(`${fmt(o.out[i])}/min ${p.type}`);return}
   const x=o.out[i]-es.reduce((s,e)=>s+e.flow,0);if(x>.05)sur.push(`${fmt(x)}/min ${p.type}`)});
  if(sur.length)return['warn',`Surplus ${sur.join(', ')} → add storage`];
- if(free.length)return['warn',`${free.join(', ')} not going to storage`];if(ul.length)return['warn',`Not linked yet: ${ul.join(', ')}`];return['ok','Inputs satisfied · output used']}
+ if(free.length)return['warn',`${free.join(', ')} not going to storage`];return['ok','Inputs satisfied · output used']}
 // ---- render
-const rowH=(i,a,b)=>`<div class="row">${a?`<span class="L" title="${esc(a.ti)}">${a.h}</span><span class="port pi ic${a.u?' unl':''}" data-side="in" data-i="${i}" title="${a.u?'Not linked yet: the card assumes this input is supplied':esc(a.t||'')}">${itemIcon(a.t)}</span>`:'<span></span>'}${b?`<span class="R${b.f?' free':''}" title="${esc(b.ti)}${b.f?' · not going anywhere':''}">${b.h}</span><span class="port po ic${b.f?' free':''}" data-side="out" data-i="${i}" title="${esc(b.t||'')}">${itemIcon(b.t)}</span>`:'<span></span>'}</div>`;
+const rowH=(i,a,b)=>`<div class="row">${a?`<span class="L" title="${esc(a.ti)}">${a.h}</span><span class="port pi ic${a.u?' unl':''}" data-side="in" data-i="${i}" title="${a.u?'Not linked yet: this machine makes nothing until it is':esc(a.t||'')}">${itemIcon(a.t)}</span>`:'<span></span>'}${b?`<span class="R${b.f?' free':''}" title="${esc(b.ti)}${b.f?' · not going anywhere':''}">${b.h}</span><span class="port po ic${b.f?' free':''}" data-side="out" data-i="${i}" title="${esc(b.t||'')}">${itemIcon(b.t)}</span>`:'<span></span>'}</div>`;
 function machineHTML(n,o){const r=o.r,b=B(r.building),[c,t]=status(n,o),g=geo(n);let rows='';
- for(let i=0;i<g.rows;i++){const p=r.inputs[i],q=r.outputs[i];const un=o.unl&&o.unl[i];rows+=rowH(i,p&&{h:`<b>${fmt(o.need[i])}</b> ${esc(p.type)}${!un&&o.sup[i]+.01<o.need[i]?` <span class="bad">▼ ${fmt(o.sup[i])}</span>`:''}`,t:p.type,ti:`${fmt(o.need[i])}/min ${p.type}`,u:un},q&&{h:`${fmt(o.out[i])} ${esc(q.type)}`,t:q.type,ti:`${fmt(o.out[i])}/min ${q.type}`,f:o.out[i]>.01&&!C.E.some(e=>e.from===n.id&&e.fi===i)})}
+ for(let i=0;i<g.rows;i++){const p=r.inputs[i],q=r.outputs[i];const un=o.unl&&o.unl[i];rows+=rowH(i,p&&{h:`<b>${fmt(o.need[i])}</b> ${esc(p.type)}${!un&&o.sup[i]+.01<o.need[i]?` <span class="bad">▼ ${fmt(o.sup[i])}</span>`:''}`,t:p.type,ti:`${fmt(o.need[i])}/min ${p.type}`,u:un},q&&{h:`${fmt(q.qty*o.f*o.effL)} ${esc(q.type)}${o.out[i]+.01<q.qty*o.f*o.effL?` <span class="bad">▼ ${fmt(o.out[i])}</span>`:''}`,t:q.type,ti:`${fmt(o.out[i])}/min ${q.type} actually made`,f:q.qty*o.f*o.effL>.01&&!C.E.some(e=>e.from===n.id&&e.fi===i)})}
  return `<div class="hd"><span class="em">${ico(b.icon,28)}</span><div title="${esc(r.name)}"><div class="ty">${esc(r.building)}</div><div class="nm">${esc(r.name)}</div></div><button class="x" data-act="del" title="Remove">×</button></div>${rows}
  <div class="ft"><button data-act="dec">−</button><b>${n.count}</b><button data-act="inc">+</button>${OCU()||n.clock!==100?`<span>clock</span><input type="number" min="1" max="250" value="${n.clock}" data-act="clock">%`:""}${usesNode(r)?`<button class="pur p-${n.pur||'n'}" data-act="pur" title="Which node this sits on (click to change)">${PURL[n.pur||'n']}</button>`:''}</div><div class="st ${c}" title="${esc(t)}">${t}</div>`}
 function logiHTML(n){const sp=n.kind==='split',t=ltype(n.id),E=C.E,id=n.id,o=C.N[id];
@@ -787,7 +791,7 @@ function renderHome(){const st=S.tabs.map(tabStats),tot={pw:0,pg:0,mc:0,by:{},ra
  const art=heroArt();
  const cards=S.tabs.map((t,i)=>{const s=st[i];return`<div class="fc${t.off?' off':''}" data-t="${t.id}">${preview(t)}<div class="fb">${hedit===t.id?`<input id="hn" value="${esc(t.name)}">`:`<b>${esc(t.name)}</b>`}<small>${s.blocks} blocks · ${s.mc} machines</small>${s.raw.length?`<small>Needs ${s.raw.slice(0,3).map(([n,v])=>esc(n)+' '+fmt(v)+'/min').join(' · ')}${s.raw.length>3?' · +'+(s.raw.length-3)+' more':''}</small>`:''}</div><div class="fa"><button class="primary" data-open="${t.id}">Open</button><button data-hpow="${t.id}" title="${t.off?'Turn factory on':'Turn factory off (not counted in totals)'}" style="color:${t.off?'var(--red)':'#3fcf7a'}">⏻</button><button data-hdup="${t.id}" title="Duplicate factory">⧉</button>${IX.worlds.length>1?`<button data-hcp="${t.id}" title="Copy to another world">➜</button>`:''}<button data-hren="${t.id}" title="Rename">${ico('edit',14)}</button><button data-hdel="${t.id}" ${S.tabs.length>1?'':'disabled'} title="Delete factory">${ico('trash',14)}</button></div></div>`}).join('');
  const by=Object.entries(tot.by).sort((a,b)=>b[1]-a[1]).map(([b,n])=>`<tr><td>${esc(b)}</td><td>${n}</td></tr>`).join(''),raw=Object.entries(tot.raw).sort().map(([n,v])=>`<tr><td>${esc(n)}</td><td>${fmt(v)}/min</td></tr>`).join('');
- $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.13</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
+ $('#home').innerHTML=`<div class="hm"><div class="hero">${art}<div class="ht"><div class="eyebrow">FACTORY PLANNING / OPERATIONS</div><h1>SATISFACTORY PLANNER <small>v3.14</small></h1><p>Designed by <b class="by">Denial &amp; Claude</b></p></div></div>
  <div class="qs"><button class="primary" id="h-new">+ New factory</button><button id="h-cont">Continue · ${esc(T.name)}</button><button id="h-imp">Import / Export</button><button id="h-mam">MAM research</button>${USER?'':'<button class="primary" id="h-signin">Sign in with Google</button>'}</div><p class="tiny">${USER?'Signed in as '+esc(USER.email||USER.displayName||'your Google account')+' · your work saves online automatically':'Not signed in: your work saves only in this browser. Sign in to keep it online and use it on any device.'}</p>
  <section class="about"><h2>About the planner</h2><p>Satisfactory Planner is a node-graph editor for production lines. Place recipes, link them together, and the flow of every item, the power draw and any shortages update live.</p><ul><li><b>Spoiler-free recipes</b> that unlock as you mark milestones complete in the ★ Progress window.</li><li><b>MAM research</b> trees that unlock recipes as you research them, without spoilers.</li><li><b>Custom recipes</b> with your own buildings from the + recipe button.</li><li><b>Belt tier badges</b> on every link, with pipes for fluids.</li><li><b>Space Elevator</b> phase materials and tier unlocks.</li><li><b>Right-click a block</b> for its stats and to upgrade it.</li><li><b>Worlds and cloud save</b> with Google sign-in.</li></ul></section>
  ${worldsHTML()}<div class="hg"><section><h2>Your factories</h2><div class="fcs">${cards}</div></section><section><h2>Totals · all factories</h2><div class="stat"><span>Power used</span><span class="value">${fmt(tot.pw)} MW</span></div><div class="stat"><span>Generated</span><span class="value">${fmt(tot.pg)} MW</span></div>${tot.pw>tot.pg+.05?`<div class="iss bad"><b>Power shortage</b><br>Short by ${fmt(tot.pw-tot.pg)} MW</div>`:''}<div class="stat"><span>Machines</span><b>${tot.mc}</b></div><h2>Buildings</h2>${by?`<table class="tbl">${by}</table>`:'<p class="tiny">No machines yet.</p>'}<h2>Raw inputs needed</h2>${raw?`<table class="tbl">${raw}</table>`:'<p class="tiny">None.</p>'}</section></div><p class="tiny" style="margin-top:22px">A feedback option will come once the app is shared with other people.</p></div>`;
@@ -819,7 +823,7 @@ function openStats(id,x,y){closeSC();const n=NODE(id);if(!n||n.kind)return;const
   <div class="scr"><span>Machines</span><span class="scn"><button data-sc="dec">−</button><b>${n.count}</b><button data-sc="inc">+</button></span></div>
   <div class="scr"><span>Clock</span><b>${fmt(n.clock)}%</b></div>
   ${pg?`<div class="scr"><span>Generates</span><b>${fmt(pg*n.count)} MW</b></div>`:`<div class="scr"><span>Power per machine</span><b>${fmt(pm)} MW</b></div><div class="scr"><span>Power total</span><b>${fmt(pm*n.count)} MW</b></div>`}
-  ${o.eff<.999?`<div class="scr bad"><span>Supplied</span><b>${Math.round(o.eff*100)}%</b></div>`:''}
+  ${o.effL<.999?`<div class="scr bad"><span>Supplied</span><b>${Math.round(o.effL*100)}%</b></div>`:''}
   ${r.inputs.length?'<h5>Consumes</h5>'+io(r.inputs):''}<h5>Produces</h5>${io(r.outputs)}${upH}${ocH}</div>`;
  d.dataset.x=x;d.dataset.y=y;document.body.appendChild(d);const w=d.offsetWidth,h=d.offsetHeight;d.style.left=Math.max(8,Math.min(x+10,innerWidth-w-8))+'px';d.style.top=Math.max(8,Math.min(y+10,innerHeight-h-8))+'px'}
 document.addEventListener('pointerdown',e=>{if(!e.target.closest('#sc')&&e.button!==2)closeSC()},true);
